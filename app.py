@@ -12,7 +12,9 @@ load_dotenv()
 
 app = Flask(__name__, static_folder="static")
 
+# -----------------------------------------------------------------------------
 # Logging set up
+# -----------------------------------------------------------------------------
 logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s")
 
 c_handler = logging.StreamHandler()
@@ -21,14 +23,18 @@ c_handler.setLevel(logging.DEBUG)
 logger = logging.getLogger(__name__)
 logger.addHandler(c_handler)
 
-if "APPLICATIONINSIGHTS_CONNECTION_STRING" in os.environ:
-    logger.info("APPLICATIONINSIGHTS_CONNECTION_STRING defined, setting AzureLogHandler")
-    logger.addHandler(AzureLogHandler())
+if 'APPLICATIONINSIGHTS_CONNECTION_STRING' in os.environ and 'APPLICATIONINSIGHTS_INSTRUMENTATION_KEY' in os.environ:
+    logger.info("APPLICATIONINSIGHTS_CONNECTION_STRING and _INSTRUMENTATION_KEY defined, setting AzureLogHandler")
+    connection_string = os.getenv('APPLICATIONINSIGHTS_CONNECTION_STRING')
+    instrumentation_key = os.getenv('APPLICATIONINSIGHTS_INSTRUMENTATION_KEY')
+    logger.addHandler(AzureLogHandler(connection_string=connection_string, instrumentation_key=instrumentation_key))
 else:
-    logger.info("APPLICATIONINSIGHTS_CONNECTION_STRING not defined, AzureLogHander will not be initialized")
+    logger.info("APPLICATIONINSIGHTS_CONNECTION_STRING and _INSTRUMENTATION_KEY defined not defined, AzureLogHander will not be initialized")
 
 
+# -----------------------------------------------------------------------------
 # Static Files
+# -----------------------------------------------------------------------------
 @app.route("/")
 def index():
     return app.send_static_file("index.html")
@@ -44,7 +50,9 @@ def assets(path):
     return send_from_directory("static/assets", path)
 
 
+# -----------------------------------------------------------------------------
 # ACS Integration Settings
+# -----------------------------------------------------------------------------
 AZURE_SEARCH_SERVICE = os.environ.get("AZURE_SEARCH_SERVICE")
 AZURE_SEARCH_INDEX = os.environ.get("AZURE_SEARCH_INDEX")
 AZURE_SEARCH_KEY = os.environ.get("AZURE_SEARCH_KEY")
@@ -57,7 +65,9 @@ AZURE_SEARCH_FILENAME_COLUMN = os.environ.get("AZURE_SEARCH_FILENAME_COLUMN")
 AZURE_SEARCH_TITLE_COLUMN = os.environ.get("AZURE_SEARCH_TITLE_COLUMN")
 AZURE_SEARCH_URL_COLUMN = os.environ.get("AZURE_SEARCH_URL_COLUMN")
 
+# -----------------------------------------------------------------------------
 # AOAI Integration Settings
+# -----------------------------------------------------------------------------
 AZURE_OPENAI_RESOURCE = os.environ.get("AZURE_OPENAI_RESOURCE")
 AZURE_OPENAI_MODEL = os.environ.get("AZURE_OPENAI_MODEL")
 AZURE_OPENAI_KEY = os.environ.get("AZURE_OPENAI_KEY")
@@ -75,6 +85,9 @@ AZURE_OPENAI_MODEL_NAME = os.environ.get("AZURE_OPENAI_MODEL_NAME",
 SHOULD_STREAM = True if AZURE_OPENAI_STREAM.lower() == "true" else False
 
 
+# -----------------------------------------------------------------------------
+# Everything else
+# -----------------------------------------------------------------------------
 def is_chat_model():
     if 'gpt-4' in AZURE_OPENAI_MODEL_NAME.lower() or AZURE_OPENAI_MODEL_NAME.lower() in ['gpt-35-turbo-4k',
                                                                                          'gpt-35-turbo-16k']:
