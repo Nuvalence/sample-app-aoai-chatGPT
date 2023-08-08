@@ -29,7 +29,7 @@ if 'APPLICATIONINSIGHTS_CONNECTION_STRING' in os.environ and 'APPLICATIONINSIGHT
     instrumentation_key = os.getenv('APPLICATIONINSIGHTS_INSTRUMENTATION_KEY')
     logger.addHandler(AzureLogHandler(connection_string=connection_string, instrumentation_key=instrumentation_key))
 else:
-    logger.info("APPLICATIONINSIGHTS_CONNECTION_STRING and _INSTRUMENTATION_KEY defined not defined, AzureLogHander will not be initialized")
+    logger.info("APPLICATIONINSIGHTS_CONNECTION_STRING and _INSTRUMENTATION_KEY defined not defined, AzureLogHandler will not be initialized")
 
 
 # -----------------------------------------------------------------------------
