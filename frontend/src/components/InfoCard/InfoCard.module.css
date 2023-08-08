@@ -1,5 +1,4 @@
-@import '../../styles/variables/colors.css';
-@import '../../styles/variables/typography.css';
+@import '../../styles/variables/_variables.css';
 
 .cardContainer {
     box-shadow: var(--theme-color-box-shadow) !important;
@@ -10,7 +9,7 @@
     margin-top: 20px !important;
     color: var(--theme-color-neutral-10);
     margin-bottom: 25px;
-    font-weight: var(--theme-typography-front-weight-mid);
+    font-weight: var(--theme-typography-font-weight-mid);
     position: relative;
 }
 
@@ -33,7 +32,7 @@
     height: 64px;
     margin-top: 15px;
     color: var(--theme-color-neutral-10);
-    font-weight: var(--theme-typography-front-weight-mid);
+    font-weight: var(--theme-typography-font-weight-mid);
 }
 
 .descriptionImage {

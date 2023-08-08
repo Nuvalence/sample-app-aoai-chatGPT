@@ -1,5 +1,4 @@
-@import '../../styles/variables/colors.css';
-@import '../../styles/variables/typography.css';
+@import '../../styles/variables/_variables.css';
 
 .cardListContainer {
     display: grid;
