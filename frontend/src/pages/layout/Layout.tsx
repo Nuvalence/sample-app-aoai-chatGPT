@@ -1,9 +1,13 @@
-import { Outlet, Link } from "react-router-dom";
-import styles from "./Layout.module.css";
-import Azure from "../../assets/Azure.svg";
-import { CopyRegular, ShareRegular } from "@fluentui/react-icons";
+import { Outlet } from "react-router-dom";
+import { CopyRegular } from "@fluentui/react-icons";
 import { Dialog, Stack, TextField } from "@fluentui/react";
 import { useEffect, useState } from "react";
+
+import styles from "./Layout.module.css";
+
+import LogoWording from "../../assets/LogoWording.svg";
+import SearchProfile from "../../assets/SearchProfile.svg";
+import LanguageSelect from "../../assets/LanguageSelect.svg";
 
 const Layout = () => {
     const [isSharePanelOpen, setIsSharePanelOpen] = useState<boolean>(false);
@@ -34,19 +38,38 @@ const Layout = () => {
     return (
         <div className={styles.layout}>
             <header className={styles.header} role={"banner"}>
-                <div className={styles.headerContainer}>
-                    <div>
-                        
+                <div>
+                    <div className={styles.logoBar}>
+                        <img
+                            src={LogoWording}
+                            className={styles.nycLogo}
+                            aria-hidden="true"
+                        />
                     </div>
-                    {/* <Stack horizontal verticalAlign="center">
-                        <Link to="/" className={styles.headerTitleContainer}>
-                            <h1 className={styles.headerTitle}>NYC MyCity Chatbot</h1>
-                        </Link>
-                        <div className={styles.shareButtonContainer} role="button" tabIndex={0} aria-label="Share" onClick={handleShareClick} onKeyDown={e => e.key === "Enter" || e.key === " " ? handleShareClick() : null}>
-                            <ShareRegular className={styles.shareButton} />
-                            <span className={styles.shareButtonText}>Share</span>
+                    <div className={styles.navBar}>
+                        <div className={styles.navTitle}>Business</div>
+                        <div className={styles.navButtons}>
+                            <span>Resources by Business</span>
+                            <span>Business Services</span>
+                            <span>Emergency Preparedness</span>
+                            <span>Regulations</span>
+                            <span>Tools</span>
+                            <span>My Business Dashboard</span>
+                            <span>
+                                <img
+                                    src={SearchProfile}
+                                    aria-hidden="true"
+                                />
+                            </span>
                         </div>
-                    </Stack> */}
+                    </div>
+                    <div className={styles.languageBar}>
+                        <img
+                            className={styles.languageSelect}
+                            src={LanguageSelect}
+                            aria-hidden="true"
+                        />
+                    </div>
                 </div>
             </header>
             <Outlet />
@@ -88,6 +111,18 @@ const Layout = () => {
                     </div>
                 </Stack>
             </Dialog>
+            <footer>
+                <div className={styles.footerContainer}>
+                    <div className={styles.copyright}>
+                        <span>&copy; 2023 City of New York. All Rights Reserved.</span>
+                    </div>
+                    <div className={styles.links}>
+                        <span>Give Feedback</span>
+                        <span>Terms of Use</span>
+                        <span>Privacy Policy</span>
+                    </div>
+                </div>
+            </footer>
         </div>
     );
 };
