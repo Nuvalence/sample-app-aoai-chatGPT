@@ -10,9 +10,15 @@ echo "Post build commands - START"
 echo "-----------------------------------------------------------"
 
 echo "-----------------------------------------------------------"
-echo "Installing NodeJs"
+echo "Installing NodeJs if not present"
 echo "-----------------------------------------------------------"
-curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && apt-get install -y nodejs
+
+if which npm >/dev/null 2>&1; then
+    echo "npm already installed, skipping installation"
+else
+    echo "npm not found, installing"
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && apt-get install -y nodejs
+fi
 
 echo "-----------------------------------------------------------"
 echo "Running npm commands"
