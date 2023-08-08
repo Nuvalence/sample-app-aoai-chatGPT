@@ -6,6 +6,7 @@ import time
 import openai
 from flask import Flask, Response, request, jsonify, send_from_directory
 from dotenv import load_dotenv
+from opencensus.ext.azure.log_exporter import AzureLogHandler
 
 load_dotenv()
 
@@ -19,6 +20,12 @@ c_handler.setLevel(logging.DEBUG)
 
 logger = logging.getLogger(__name__)
 logger.addHandler(c_handler)
+
+if "APPLICATIONINSIGHTS_CONNECTION_STRING" in os.environ:
+    logger.info("APPLICATIONINSIGHTS_CONNECTION_STRING defined, setting AzureLogHandler")
+    logger.addHandler(AzureLogHandler())
+else:
+    logger.info("APPLICATIONINSIGHTS_CONNECTION_STRING not defined, AzureLogHander will not be initialized")
 
 
 # Static Files
