@@ -2,6 +2,7 @@ import json
 import os
 import logging
 import requests
+import time
 import openai
 from flask import Flask, Response, request, jsonify, send_from_directory
 from dotenv import load_dotenv
@@ -9,6 +10,15 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__, static_folder="static")
+
+# Logging set up
+logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s")
+
+c_handler = logging.StreamHandler()
+c_handler.setLevel(logging.DEBUG)
+
+logger = logging.getLogger(__name__)
+logger.addHandler(c_handler)
 
 
 # Static Files
@@ -122,6 +132,7 @@ def prepare_body_headers_with_data(request):
 
 
 def stream_with_data(body, headers, endpoint):
+    logger.info(f"stream_with_data: {endpoint}")
     s = requests.Session()
     response = {
         "id": "",
@@ -133,33 +144,41 @@ def stream_with_data(body, headers, endpoint):
         }]
     }
     try:
+        logger.info("stream_with_data: starting POST")
+        start_time = time.time()
         with s.post(endpoint, json=body, headers=headers, stream=True) as r:
+            total_time = round(time.time() - start_time, 3)
+            logger.info(f"stream_with_data: POST completed in {total_time} seconds, processing response lines")
+            start_time = time.time()
             for line in r.iter_lines(chunk_size=10):
                 if line:
-                    lineJson = json.loads(line.lstrip(b'data:').decode('utf-8'))
-                    if 'error' in lineJson:
-                        yield json.dumps(lineJson).replace("\n", "\\n") + "\n"
-                    response["id"] = lineJson["id"]
-                    response["model"] = lineJson["model"]
-                    response["created"] = lineJson["created"]
-                    response["object"] = lineJson["object"]
+                    line_json = json.loads(line.lstrip(b'data:').decode('utf-8'))
+                    if 'error' in line_json:
+                        yield json.dumps(line_json).replace("\n", "\\n") + "\n"
+                    response["id"] = line_json["id"]
+                    response["model"] = line_json["model"]
+                    response["created"] = line_json["created"]
+                    response["object"] = line_json["object"]
 
-                    role = lineJson["choices"][0]["messages"][0]["delta"].get("role")
+                    role = line_json["choices"][0]["messages"][0]["delta"].get("role")
                     if role == "tool":
-                        response["choices"][0]["messages"].append(lineJson["choices"][0]["messages"][0]["delta"])
+                        response["choices"][0]["messages"].append(line_json["choices"][0]["messages"][0]["delta"])
                     elif role == "assistant":
                         response["choices"][0]["messages"].append({
                             "role": "assistant",
                             "content": ""
                         })
                     else:
-                        deltaText = lineJson["choices"][0]["messages"][0]["delta"]["content"]
+                        deltaText = line_json["choices"][0]["messages"][0]["delta"]["content"]
                         if deltaText != "[DONE]":
                             response["choices"][0]["messages"][1]["content"] += deltaText
 
                     yield json.dumps(response).replace("\n", "\\n") + "\n"
+            total_time = round(time.time() - start_time, 3)
+            logger.info(f"stream_with_data: lines processed in {total_time} seconds")
     except Exception as e:
-        yield json.dumps({"error": str(e)}).replace("\n", "\\n") + "\n"
+        logger.error(f"stream_with_data: exception processing response: {str(e)}")
+        yield json.dumps({"error": "Something went wrong, please try again."}) + "\n"
 
 
 def conversation_with_data(request):
@@ -257,6 +276,7 @@ def conversation_without_data(request):
 def conversation():
     try:
         use_data = should_use_data()
+        logger.info(f"conversation: start of conversation, use data = {use_data}")
         if use_data:
             return conversation_with_data(request)
         else:
@@ -267,4 +287,5 @@ def conversation():
 
 
 if __name__ == "__main__":
+    logger.info("Main: application starting")
     app.run()
