@@ -35,12 +35,10 @@ const Layout = () => {
         <div className={styles.layout}>
             <header className={styles.header} role={"banner"}>
                 <div className={styles.headerContainer}>
-                    <Stack horizontal verticalAlign="center">
-                        <img
-                            src={Azure}
-                            className={styles.headerIcon}
-                            aria-hidden="true"
-                        />
+                    <div>
+                        
+                    </div>
+                    {/* <Stack horizontal verticalAlign="center">
                         <Link to="/" className={styles.headerTitleContainer}>
                             <h1 className={styles.headerTitle}>NYC MyCity Chatbot</h1>
                         </Link>
@@ -48,7 +46,7 @@ const Layout = () => {
                             <ShareRegular className={styles.shareButton} />
                             <span className={styles.shareButtonText}>Share</span>
                         </div>
-                    </Stack>
+                    </Stack> */}
                 </div>
             </header>
             <Outlet />

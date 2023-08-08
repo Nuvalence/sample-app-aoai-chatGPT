@@ -4,8 +4,7 @@ import { HashRouter, Routes, Route } from "react-router-dom";
 import { initializeIcons } from "@fluentui/react";
 
 import "./index.css";
-import "./styles/variables/colors.css";
-import "./styles/variables/typography.css";
+import "./styles/variables/_variables.css";
 import 'semantic-ui-css/semantic.min.css';
 
 
