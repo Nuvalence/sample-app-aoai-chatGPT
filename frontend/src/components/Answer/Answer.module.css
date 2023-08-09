@@ -1,9 +1,10 @@
 .answerContainer {
   display: flex;
-  width: 940px;
-  padding: 22px 22px 73px 22px;
+  width: 100%;
+  padding: 20px 20px 73px 20px;
+  margin-top: 20px;
+  margin-left: 20px;
   justify-content: center;
-  align-items: center;
 
   border-radius: 14px;
   background: #fff;
@@ -13,7 +14,7 @@
 .answerText {
   color: #0d0c0c;
   font-family: Lora;
-  font-size: 16px;
+  font-size: 18px;
   font-style: normal;
   font-weight: 500;
   line-height: 24px; /* 150% */
@@ -25,7 +26,6 @@
   margin: 11px;
   white-space: normal;
   word-wrap: break-word;
-  max-width: 800px;
   overflow-x: auto;
 }
 

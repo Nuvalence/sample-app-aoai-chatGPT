@@ -108,17 +108,21 @@
 .chatMessageUser {
   display: flex;
   justify-content: start;
-  margin-bottom: 12px;
+  margin-left: 20px;
+  width: 100%;
 }
 
-.chatMessageUserWrapper {
+.chatMessageWrapper {
   display: flex;
+  align-items: center;
+  margin-bottom: 18px;
 }
 
 .chatMessageUserMessage {
   display: inline-flex;
   height: 60px;
-  padding: 0px 544px 0px 22px;
+  padding: 20px;
+  width: 100%;
   align-items: center;
   flex-shrink: 0;
 
@@ -127,7 +131,7 @@
   background: var(--white, #fff);
 
   color: #0d0c0c;
-  font-size: 16px;
+  font-size: 18px;
   font-style: normal;
   font-weight: 500;
   line-height: 100%; /* 16px */
@@ -163,7 +167,7 @@
   order: 0;
   flex-grow: 0;
 
-  max-width: 800px;
+  width: 100%;
   /* filter: drop-shadow(rgba(182, 52, 67, 1) 1px 1px 2px) drop-shadow(rgba(182, 52, 67, 1) 0px 0px 1px); */
 }
 
@@ -237,6 +241,7 @@
   bottom: 116px;
   border: 1px solid #d1d1d1;
   border-radius: 16px;
+  margin-bottom: 20px;
 }
 
 .stopGeneratingIcon {
@@ -307,7 +312,7 @@
 .citationPanelTitle {
   font-style: normal;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 18px;
   line-height: 22px;
   color: #323130;
   margin-top: 12px;

@@ -15,6 +15,7 @@ import rehypeRaw from "rehype-raw";
 import styles from "./Chat.module.css";
 import MyCityTitle from "../../assets/MyCityTitle.svg";
 import UserAvatar from "../../assets/UserAvatar.svg";
+import AiAvatar from "../../assets/AiAvatar.svg";
 
 import {
   ChatMessage,
@@ -170,7 +171,7 @@ const Chat = () => {
       citation.url ?? "",
       "",
     ]);
-    window.open(citation.url ?? '', '_blank')?.focus();
+    window.open(citation.url ?? "", "_blank")?.focus();
   };
 
   const parseCitationFromMessage = (message: ChatMessage) => {
@@ -246,7 +247,7 @@ const Chat = () => {
                   information on a wide range of topics, offer suggestions, and
                   engage in discussions.
                 </h2>
-                <InfoCardList onQuestionReceived={makeApiRequest}/>
+                <InfoCardList onQuestionReceived={makeApiRequest} />
               </Stack>
             ) : (
               <div
@@ -257,7 +258,7 @@ const Chat = () => {
                 {answers.map((answer, index) => (
                   <>
                     {answer.role === "user" ? (
-                      <div className={styles.chatMessageUserWrapper}>
+                      <div className={styles.chatMessageWrapper}>
                         <img
                           src={UserAvatar}
                           className={styles.chatUserAvatarIcon}
@@ -270,7 +271,12 @@ const Chat = () => {
                         </div>
                       </div>
                     ) : answer.role === "assistant" ? (
-                      <div className={styles.chatMessageGpt}>
+                      <div className={styles.chatMessageWrapper}>
+                        <img
+                          src={AiAvatar}
+                          className={styles.chatUserAvatarIcon}
+                          aria-hidden="true"
+                        />
                         <Answer
                           answer={{
                             answer: answer.content,
@@ -302,12 +308,24 @@ const Chat = () => {
                 ))}
                 {showLoadingMessage && (
                   <>
-                    <div className={styles.chatMessageUser}>
-                      <div className={styles.chatMessageUserMessage}>
-                        {lastQuestionRef.current}
-                      </div>
+                    <div className={styles.chatMessageWrapper}>
+                      <img
+                        src={UserAvatar}
+                        className={styles.chatUserAvatarIcon}
+                        aria-hidden="true"
+                      />
+                      <div className={styles.chatMessageUser} tabIndex={0}>
+                          <div className={styles.chatMessageUserMessage}>
+                            {lastQuestionRef.current}
+                          </div>
+                        </div>
                     </div>
-                    <div className={styles.chatMessageGpt}>
+                    <div className={styles.chatMessageWrapper}>
+                      <img
+                        src={AiAvatar}
+                        className={styles.chatUserAvatarIcon}
+                        aria-hidden="true"
+                      />
                       <Answer
                         answer={{
                           answer: "Generating answer...",
