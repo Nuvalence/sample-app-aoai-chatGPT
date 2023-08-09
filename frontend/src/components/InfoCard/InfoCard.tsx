@@ -30,7 +30,7 @@ export const InfoCard = ({ title, icon, details, onSendQuestion, isFirstCard }: 
     };
 
     return (
-        <Card className={styles.cardContainer} style={{ marginTop: 'unset', height: '350px'}}>
+        <Card className={styles.cardContainer} style={{ marginTop: 'unset', height: '100%'}}>
             <Card.Content>
                 <Card.Header className={`${styles.cardHeader} ${isFirstCard ? styles.firstCardHeader : ''}`}>
                     <div className={styles.cardHeaderIcon}>

@@ -3,6 +3,7 @@
 .cardContainer {
     box-shadow: var(--theme-color-box-shadow) !important;
     font-family: Montserrat;
+    width: 322px !important;
 }
 
 .cardHeader {
@@ -35,7 +36,6 @@
     background-color: var(--theme-color-neutral-30);
     padding: 10px 20px;
     border-radius: 8px;
-    height: 64px;
     margin-top: 15px;
     color: var(--theme-color-neutral-10);
     font-weight: var(--theme-typography-font-weight-mid);

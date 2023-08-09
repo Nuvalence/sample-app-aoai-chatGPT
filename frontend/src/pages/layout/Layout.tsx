@@ -13,6 +13,7 @@ const Layout = () => {
     const [isSharePanelOpen, setIsSharePanelOpen] = useState<boolean>(false);
     const [copyClicked, setCopyClicked] = useState<boolean>(false);
     const [copyText, setCopyText] = useState<string>("Copy URL");
+    const businessPage = "https://nyc-business.nyc.gov/nycbusiness/";
 
     const handleShareClick = () => {
         setIsSharePanelOpen(true);
@@ -28,6 +29,10 @@ const Layout = () => {
         navigator.clipboard.writeText(window.location.href);
         setCopyClicked(true);
     };
+
+    const navToBusinessPage = () => {
+        window.open(businessPage ?? "", "_blank")?.focus();
+    }
 
     useEffect(() => {
         if (copyClicked) {
@@ -47,7 +52,9 @@ const Layout = () => {
                         />
                     </div>
                     <div className={styles.navBar}>
-                        <div className={styles.navTitle}>Business</div>
+                        <div className={styles.navTitle}
+                        onClick={navToBusinessPage}
+                        >Business</div>
                         <div className={styles.navButtons}>
                             <span>Resources by Business</span>
                             <span>Business Services</span>
