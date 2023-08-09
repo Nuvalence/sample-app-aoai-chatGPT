@@ -1,9 +1,9 @@
 .answerContainer {
   display: flex;
-  width: 940px;
-  padding: 22px 22px 73px 22px;
+  width: 100%;
+  padding: 20px 20px 73px 20px;
+  margin-left: 20px;
   justify-content: center;
-  align-items: center;
 
   border-radius: 14px;
   background: #fff;
@@ -22,10 +22,8 @@
   order: 1;
   align-self: stretch;
   flex-grow: 0;
-  margin: 11px;
   white-space: normal;
   word-wrap: break-word;
-  max-width: 800px;
   overflow-x: auto;
 }
 
@@ -132,7 +130,8 @@
   line-height: 16px;
   display: flex;
   align-items: center;
-  color: #616161;
+  color: #727478;
+  font-family: Montserrat;
 }
 
 .accordionTitle:hover {

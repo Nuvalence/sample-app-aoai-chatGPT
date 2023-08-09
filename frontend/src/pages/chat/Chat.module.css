@@ -5,6 +5,7 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+  font-family: Lora;
 }
 
 .chatRoot {
@@ -39,6 +40,7 @@
 }
 
 .chatEmptyStateSubtitle {
+  font-family: Montserrat;
   margin-top: 20px;
   font-style: normal;
   font-weight: 600;
@@ -67,6 +69,14 @@
     width: 100%;
   }
 }
+
+.chatContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
 .chatIcon {
   height: 30px;
   width: 299px;
@@ -84,11 +94,11 @@
 
 .chatMessageStream {
   flex-grow: 1;
-  max-width: 1028px;
   width: 100%;
   overflow-y: auto;
   padding-left: 24px;
   padding-right: 24px;
+  padding-bottom: 24px;
   display: flex;
   flex-direction: column;
   margin-top: 24px;
@@ -107,6 +117,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  font-family: Montserrat;
 }
 
 .newConversation:hover {
@@ -121,17 +132,21 @@
 .chatMessageUser {
   display: flex;
   justify-content: start;
-  margin-bottom: 12px;
+  margin-left: 20px;
+  width: 100%;
 }
 
-.chatMessageUserWrapper {
+.chatMessageWrapper {
   display: flex;
+  align-items: center;
+  margin-bottom: 18px;
 }
 
 .chatMessageUserMessage {
   display: inline-flex;
   height: 60px;
-  padding: 0px 544px 0px 22px;
+  padding: 20px;
+  width: 100%;
   align-items: center;
   flex-shrink: 0;
 
@@ -176,12 +191,12 @@
   order: 0;
   flex-grow: 0;
 
-  max-width: 800px;
+  width: 100%;
   /* filter: drop-shadow(rgba(182, 52, 67, 1) 1px 1px 2px) drop-shadow(rgba(182, 52, 67, 1) 0px 0px 1px); */
 }
 
 .chatMessageErrorContent {
-  font-family: "Segoe UI";
+  font-family: Montserrat;
   font-style: normal;
   font-weight: 400;
   font-size: 14px;
@@ -250,7 +265,7 @@
   bottom: 116px;
   border: 1px solid #d1d1d1;
   border-radius: 16px;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 }
 
 .stopGeneratingIcon {
@@ -260,7 +275,7 @@
 }
 
 .stopGeneratingText {
-  width: 103px;
+  width: 110px;
   height: 20px;
   font-style: normal;
   font-weight: 600;
@@ -321,7 +336,7 @@
 .citationPanelTitle {
   font-style: normal;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 18px;
   line-height: 22px;
   color: #323130;
   margin-top: 12px;

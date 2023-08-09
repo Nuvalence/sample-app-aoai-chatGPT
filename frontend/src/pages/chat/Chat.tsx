@@ -14,6 +14,7 @@ import rehypeRaw from "rehype-raw";
 import styles from "./Chat.module.css";
 import MyCityTitle from "../../assets/MyCityTitle.svg";
 import UserAvatar from "../../assets/UserAvatar.svg";
+import AiAvatar from "../../assets/AiAvatar.svg";
 import Conversation from "../../assets/Conversation.svg";
 
 import {
@@ -170,7 +171,7 @@ const Chat = () => {
       citation.url ?? "",
       "",
     ]);
-    window.open(citation.url ?? '', '_blank')?.focus();
+    window.open(citation.url ?? "", "_blank")?.focus();
   };
 
   const parseCitationFromMessage = (message: ChatMessage) => {
@@ -233,30 +234,85 @@ const Chat = () => {
         </Stack>
       ) : (
         <Stack horizontal className={styles.chatRoot}>
-          {!lastQuestionRef.current ? (
-            <Stack className={styles.chatEmptyState}>
-              <img
-                src={MyCityTitle}
-                className={styles.titleIcon}
-                aria-hidden="true"
-              />
-              <h2 className={styles.chatEmptyStateSubtitle}>
-                Welcome to MyCity AI Chatbot, it can provide general
-                information on a wide range of topics, offer suggestions, and
-                engage in discussions.
-              </h2>
-              <InfoCardList onQuestionReceived={makeApiRequest}/>
-            </Stack>
-          ) : (
-            <div
-              className={styles.chatMessageStream}
-              style={{ marginBottom: isLoading ? "40px" : "0px" }}
-              role="log"
-            >
-              {answers.map((answer, index) => (
-                <>
-                  {answer.role === "user" ? (
-                    <div className={styles.chatMessageUserWrapper}>
+          <div className={styles.chatContainer}>
+            {!lastQuestionRef.current ? (
+              <Stack className={styles.chatEmptyState}>
+                <img
+                  src={MyCityTitle}
+                  className={styles.titleIcon}
+                  aria-hidden="true"
+                />
+                <h2 className={styles.chatEmptyStateSubtitle}>
+                  Welcome to MyCity AI Chatbot, it can provide general
+                  information on a wide range of topics, offer suggestions, and
+                  engage in discussions.
+                </h2>
+                <InfoCardList onQuestionReceived={makeApiRequest} />
+              </Stack>
+            ) : (
+              <div
+                className={styles.chatMessageStream}
+                style={{ marginBottom: isLoading ? "40px" : "0px" }}
+                role="log"
+              >
+                {answers.map((answer, index) => (
+                  <>
+                    {answer.role === "user" ? (
+                      <div className={styles.chatMessageWrapper}>
+                        <img
+                          src={UserAvatar}
+                          className={styles.chatUserAvatarIcon}
+                          aria-hidden="true"
+                        />
+                        <div className={styles.chatMessageUser} tabIndex={0}>
+                          <div className={styles.chatMessageUserMessage}>
+                            {answer.content}
+                          </div>
+                        </div>
+                      </div>
+                    ) : answer.role === "assistant" ? (
+                      <div className={styles.chatMessageWrapper}>
+                        <img
+                          src={AiAvatar}
+                          className={styles.chatUserAvatarIcon}
+                          aria-hidden="true"
+                        />
+                        <Answer
+                          answer={{
+                            answer: answer.content,
+                            citations: parseCitationFromMessage(
+                              answers[index - 1]
+                            ),
+                          }}
+                          onCitationClicked={(c) => onShowCitation(c)}
+                        />
+                      </div>
+                    ) : answer.role === "error" ? (
+                      <div className={styles.chatMessageError}>
+                        <Stack
+                          horizontal
+                          className={styles.chatMessageErrorContent}
+                        >
+                          <ErrorCircleRegular
+                            className={styles.errorIcon}
+                            style={{ color: "rgba(182, 52, 67, 1)" }}
+                          />
+                          <span>Error</span>
+                        </Stack>
+                        <span className={styles.chatMessageErrorContent}>
+                          {answer.content}
+                        </span>
+                      </div>
+                    ) : null}
+                  </>
+                ))}
+                {showLoadingMessage && (
+                  <div
+                    className={styles.chatMessageStream}
+                    style={{ marginBottom: isLoading ? "40px" : "0px" }}
+                    role="log"
+                  >
+                    <div className={styles.chatMessageWrapper}>
                       <img
                         src={UserAvatar}
                         className={styles.chatUserAvatarIcon}
@@ -264,112 +320,77 @@ const Chat = () => {
                       />
                       <div className={styles.chatMessageUser} tabIndex={0}>
                         <div className={styles.chatMessageUserMessage}>
-                          {answer.content}
+                          {lastQuestionRef.current}
                         </div>
                       </div>
                     </div>
-                  ) : answer.role === "assistant" ? (
-                    <div className={styles.chatMessageGpt}>
+                    <div className={styles.chatMessageWrapper}>
+                      <img
+                        src={AiAvatar}
+                        className={styles.chatUserAvatarIcon}
+                        aria-hidden="true"
+                      />
                       <Answer
                         answer={{
-                          answer: answer.content,
-                          citations: parseCitationFromMessage(
-                            answers[index - 1]
-                          ),
+                          answer: "Generating answer...",
+                          citations: [],
                         }}
-                        onCitationClicked={(c) => onShowCitation(c)}
+                        onCitationClicked={() => null}
                       />
                     </div>
-                  ) : answer.role === "error" ? (
-                    <div className={styles.chatMessageError}>
-                      <Stack
-                        horizontal
-                        className={styles.chatMessageErrorContent}
-                      >
-                        <ErrorCircleRegular
-                          className={styles.errorIcon}
-                          style={{ color: "rgba(182, 52, 67, 1)" }}
-                        />
-                        <span>Error</span>
-                      </Stack>
-                      <span className={styles.chatMessageErrorContent}>
-                        {answer.content}
-                      </span>
-                    </div>
-                  ) : null}
-                </>
-              ))}
-              {showLoadingMessage && (
-                <>
-                  <div className={styles.chatMessageUser}>
-                    <div className={styles.chatMessageUserMessage}>
-                      {lastQuestionRef.current}
-                    </div>
                   </div>
-                  <div className={styles.chatMessageGpt}>
-                    <Answer
-                      answer={{
-                        answer: "Generating answer...",
-                        citations: [],
-                      }}
-                      onCitationClicked={() => null}
-                    />
-                  </div>
-                </>
-              )}
-              <div ref={chatMessageStreamEnd} />
-            </div>
-          )}
-
-          <Stack horizontal className={styles.chatInput}>
-            {isLoading && (
-              <Stack
-                horizontal
-                className={styles.stopGeneratingContainer}
-                role="button"
-                aria-label="Stop generating"
-                tabIndex={0}
-                onClick={stopGenerating}
-                onKeyDown={(e) =>
-                  e.key === "Enter" || e.key === " " ? stopGenerating() : null
-                }
-              >
-                <SquareRegular
-                  className={styles.stopGeneratingIcon}
-                  aria-hidden="true"
-                />
-                <span
-                  className={styles.stopGeneratingText}
-                  aria-hidden="true"
-                >
-                  Stop generating
-                </span>
-              </Stack>
-            )}
-            {lastQuestionRef.current && !isLoading && (
-              <div
-                className={styles.newConversation}
-                onClick={clearChat}
-              >
-                <img
-                  src={Conversation}
-                  className={styles.newMessageIcon}
-                  aria-hidden="true"
-                />
-                <span>New Conversation</span>
+                )}
+                <div ref={chatMessageStreamEnd} />
               </div>
             )}
-            <QuestionInput
-              clearOnSend
-              placeholder="Send a message"
-              disabled={isLoading}
-              onSend={(question) => makeApiRequest(question)}
-            />
-            <div className={styles.chatDisclaimer}>
-              NYC Government Preview. Knowledge is based on information
-              published online until July 17 2023.
-            </div>
-          </Stack>
+
+            <Stack horizontal className={styles.chatInput}>
+              {isLoading && (
+                <Stack
+                  horizontal
+                  className={styles.stopGeneratingContainer}
+                  role="button"
+                  aria-label="Stop generating"
+                  tabIndex={0}
+                  onClick={stopGenerating}
+                  onKeyDown={(e) =>
+                    e.key === "Enter" || e.key === " " ? stopGenerating() : null
+                  }
+                >
+                  <SquareRegular
+                    className={styles.stopGeneratingIcon}
+                    aria-hidden="true"
+                  />
+                  <span
+                    className={styles.stopGeneratingText}
+                    aria-hidden="true"
+                  >
+                    Stop generating
+                  </span>
+                </Stack>
+              )}
+              {lastQuestionRef.current && !isLoading && (
+                <div className={styles.newConversation} onClick={clearChat}>
+                  <img
+                    src={Conversation}
+                    className={styles.newMessageIcon}
+                    aria-hidden="true"
+                  />
+                  <span>New Conversation</span>
+                </div>
+              )}
+              <QuestionInput
+                clearOnSend
+                placeholder="Send a message"
+                disabled={isLoading}
+                onSend={(question) => makeApiRequest(question)}
+              />
+              <div className={styles.chatDisclaimer}>
+                NYC Government Preview. Knowledge is based on information
+                published online until July 17 2023.
+              </div>
+            </Stack>
+          </div>
           {answers.length > 0 && isCitationPanelOpen && activeCitation && (
             <Stack.Item
               className={styles.citationPanel}

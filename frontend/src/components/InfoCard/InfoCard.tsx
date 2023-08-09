@@ -36,7 +36,7 @@ export const InfoCard = ({ title, icon, details, onSendQuestion, isFirstCard }: 
                     <div className={styles.cardHeaderIcon}>
                         {icon && <img src={icon} alt="Icon"/>}
                     </div>
-                    <div>{title}</div>
+                    <div className={styles.cardHeaderTitle}>{title}</div>
                 </Card.Header>
                 <Card.Description>
                     {details.map((detail, index) => (

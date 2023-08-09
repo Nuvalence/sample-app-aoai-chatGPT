@@ -7,6 +7,7 @@
   justify-content: center;
   align-items: center;
   width: 70%;
+  font-family: Lora;
 }
 
 @media only screen and (max-width: 600px) {
@@ -24,6 +25,11 @@
   margin-bottom: 10px;
   margin-left: 12px;
   margin-right: 12px;
+  font-family: Lora;
+}
+
+.questionInputTextArea input {
+  font-family: Lora;
 }
 
 .questionInputSendButton {
@@ -35,7 +41,8 @@
   flex-shrink: 0;
   color: var(--white);
   border-radius: 5px;
-  background: linear-gradient(15deg, #e10145 0%, #ff6f9a 92.71%);
+  background: #C46;
+  font-family: Montserrat;
 }
 
 .questionInputSendButtonDisabled {

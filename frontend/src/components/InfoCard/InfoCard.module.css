@@ -2,6 +2,7 @@
 
 .cardContainer {
     box-shadow: var(--theme-color-box-shadow) !important;
+    font-family: Montserrat;
 }
 
 .cardHeader {
@@ -11,6 +12,7 @@
     margin-bottom: 25px;
     font-weight: var(--theme-typography-font-weight-mid);
     position: relative;
+    font-family: Montserrat;
 }
 
 .cardHeaderIcon {
@@ -18,6 +20,10 @@
     width: 93px;
     top: -8px;
     left: 5px;
+}
+
+.cardHeaderTitle {
+    font-family: Montserrat;
 }
 
 .firstCardHeader {

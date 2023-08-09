@@ -20,6 +20,7 @@
 }
 
 .navBar {
+    font-family: Montserrat;
     background: var(--theme-color-primary-10);
     height: 80px;
     color: var(--white);
@@ -154,6 +155,7 @@
 .footerContainer {
     display: flex;
     align-items: center;
+    font-family: Montserrat;
     font-size: var(--theme-typography-font-size-x-small);
     color: var(--theme-color-neutral-15);
     background: var(--theme-color-neutral-35);
