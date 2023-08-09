@@ -163,10 +163,29 @@ def stream_with_data(body, headers, endpoint):
             "messages": []
         }]
     }
+
+    max_retries = 3
     try:
         logger.info("stream_with_data: starting POST")
         start_time = time.time()
-        with s.post(endpoint, json=body, headers=headers, stream=True) as r:
+        for retry in range(max_retries):
+            try:
+                r = s.post(endpoint, json=body, headers=headers, stream=True, timeout=10)
+                r.raise_for_status()
+                break
+            except requests.exceptions.Timeout:
+                logger.error(f"POST timed out on attempt {retry}")
+                if retry < max_retries - 1:
+                    logger.error("Retrying...")
+                else:
+                    logger.error("Giving up and returning an error")
+                    yield json.dumps({"error": "Something went wrong, please try again."}) + "\n"
+                    return
+            except requests.exceptions.RequestException as e:
+                logger.error("An error occurred:", e)
+                yield json.dumps({"error": "Something went wrong, please try again."}) + "\n"
+                return
+        with r:
             total_time = round(time.time() - start_time, 3)
             logger.info(f"stream_with_data: POST completed in {total_time} seconds, processing response lines")
             start_time = time.time()
