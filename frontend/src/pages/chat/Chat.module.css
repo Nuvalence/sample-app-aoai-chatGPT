@@ -208,7 +208,7 @@
 }
 
 .chatInput {
-  position: absolute;
+  position: sticky;
   flex: 0 0 100px;
   padding-top: 12px;
   padding-bottom: 24px;
@@ -221,7 +221,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  bottom: 0;
 }
 
 @media only screen and (max-width: 600px) {
@@ -231,8 +230,7 @@
     padding-left: 12px;
     padding-right: 12px;
     max-width: 1028px;
-    position: sticky;
-    margin-bottom: 10px;
+    margin-bottom: 50px;
     margin-top: 8px;
     display: flex;
     flex-direction: column;
