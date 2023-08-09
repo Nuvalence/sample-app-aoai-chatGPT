@@ -20,7 +20,7 @@ export const Answer = ({
     answer,
     onCitationClicked
 }: Props) => {
-    const [isRefAccordionOpen, { toggle: toggleIsRefAccordionOpen }] = useBoolean(false);
+    const [isRefAccordionOpen, { toggle: toggleIsRefAccordionOpen }] = useBoolean(true);
     const filePathTruncationLimit = 50;
 
     const parsedAnswer = useMemo(() => parseAnswer(answer), [answer]);
@@ -76,7 +76,7 @@ export const Answer = ({
                                     tabIndex={0}
                                     role="button"
                                 >
-                                <span>{parsedAnswer.citations.length > 1 ? parsedAnswer.citations.length + " references" : "1 reference"}</span>
+                                <span>{parsedAnswer.citations.length > 1 ? parsedAnswer.citations.length + "Supporting references" : "Supporting reference"}</span>
                                 </Text>
                                 <FontIcon className={styles.accordionIcon}
                                 onClick={handleChevronClick} iconName={chevronIsExpanded ? 'ChevronDown' : 'ChevronRight'}
@@ -100,7 +100,6 @@ export const Answer = ({
                                     className={styles.citationContainer}
                                     aria-label={createCitationFilepath(citation, idx)}
                                 >
-                                    <div className={styles.citation}>{idx}</div>
                                     {createCitationFilepath(citation, idx, true)}
                                 </span>);
                         })}

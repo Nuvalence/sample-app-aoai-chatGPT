@@ -1,7 +1,7 @@
 .answerContainer {
   display: flex;
   width: 100%;
-  padding: 20px 20px 73px 20px;
+  padding: 20px 20px 48px 20px;
   margin-left: 20px;
   justify-content: center;
 
@@ -25,6 +25,8 @@
   white-space: normal;
   word-wrap: break-word;
   overflow-x: auto;
+
+  margin-bottom: 24px;
 }
 
 .answerFooter {
@@ -57,51 +59,24 @@
 }
 
 .citationContainer {
-  margin-left: 10px;
   font-style: normal;
   font-weight: 600;
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 14px;
+  line-height: 21px;
 
-  color: #115ea3;
+  color: #025ADF;
+  font-family: Montserrat;
+
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 4px 6px;
+  padding: 12px 24px;
   gap: 4px;
-  border: 1px solid #d1d1d1;
+  border: 1px solid #EAEEF1;
   border-radius: 4px;
 }
 
 .citationContainer:hover {
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-.citation {
-  box-sizing: border-box;
-  display: inline-flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 0px;
-  width: 14px;
-  height: 14px;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
-  flex: none;
-  flex-grow: 0;
-  z-index: 2;
-  font-style: normal;
-  font-weight: 600;
-  font-size: 10px;
-  line-height: 14px;
-  text-align: center;
-  color: #424242;
-  cursor: pointer;
-}
-
-.citation:hover {
   text-decoration: underline;
   cursor: pointer;
 }
@@ -113,8 +88,10 @@
   align-items: center;
   padding: 0px;
   margin-top: 4px;
+  margin-left: 12px;
   color: #616161;
-  font-size: 10px;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .accordionIcon:hover {
@@ -122,11 +99,9 @@
 }
 
 .accordionTitle {
-  margin-right: 5px;
-  margin-left: 10px;
   font-style: normal;
-  font-weight: 400;
-  font-size: 12px;
+  font-weight: 600;
+  font-size: 14px;
   line-height: 16px;
   display: flex;
   align-items: center;
