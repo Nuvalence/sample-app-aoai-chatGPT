@@ -1,3 +1,5 @@
+@import '../../styles/variables/_variables.css';
+
 .layout {
     display: flex;
     flex-direction: column;
@@ -8,10 +10,48 @@
     background-color: #f2f2f2;
 }
 
-.headerContainer {
+.logoBar {
+    background: var(--theme-color-primary);
+    height: 40px;
+}
+.nycLogo {
+    margin-left: 40px;
+    padding-top: 5px;
+}
+
+.navBar {
+    font-family: Montserrat;
+    background: var(--theme-color-primary-10);
+    height: 80px;
+    color: var(--white);
     display: flex;
-    justify-content: left;
+    padding: 20px 40px 20px 40px;
     align-items: center;
+}
+.navTitle {
+    font-size: var(--theme-typography-font-size-x-large);
+    flex: 1;
+}
+.navButtons {
+    flex: 4;
+    align-items: center;
+    display: flex;
+    justify-content: end;
+}
+.navButtons span {
+    padding-right: 10px;
+    font-weight: var(--theme-typography-font-weight-bold);
+}
+
+
+.languageBar {
+    display: flex;
+    background: var(--theme-color-neutral-20);
+    height: 30px;
+    align-items: center;
+}
+.languageSelect {
+    padding-left: 40px;
 }
 
 .headerTitleContainer {
@@ -23,7 +63,7 @@
 
 .headerTitle {
     font-style: normal;
-    font-weight: 600;
+    font-weight: var(--theme-typography-font-weight-mid);
     font-size: 20px;
     line-height: 28px;
     display: flex;
@@ -57,26 +97,26 @@
 }
 
 .shareButton {
-    color: #FFFFFF;
+    color: var(--white);
 }
 
 .shareButtonText {
     font-style: normal;
-    font-weight: 600;
+    font-weight: var(--theme-typography-font-weight-mid);
     font-size: 14px;
     line-height: 20px;
     display: flex;
     align-items: center;
-    color: #FFFFFF;
+    color: var(--white);
 }
 
 .urlTextBox {
     font-style: normal;
-    font-weight: 400;
+    font-weight: var(--theme-typography-font-weight-normal);
     font-size: 14px;
     line-height: 20px;
     color: #707070;
-    border: 1px solid #D1D1D1;
+    border: 1px solid var(--theme-color-neutral-25);
     border-radius: 4px;
 }
 
@@ -88,14 +128,14 @@
     align-items: center;
     padding: 5px 12px;
     gap: 4px;
-    background: #FFFFFF;
-    border: 1px solid #D1D1D1;
+    background: var(--white);
+    border: 1px solid var(--theme-color-neutral-25);
     border-radius: 4px;
 }
 
 .copyButtonContainer:hover {
     cursor: pointer;
-    background: #D1D1D1;
+    background: var(--theme-color-neutral-25);
 }
 
 .copyButton {
@@ -104,10 +144,32 @@
 
 .copyButtonText {
     font-style: normal;
-    font-weight: 600;
+    font-weight: var(--theme-typography-font-weight-mid);
     font-size: 14px;
     line-height: 20px;
     display: flex;
     align-items: center;
     color: #242424;
+}
+
+.footerContainer {
+    display: flex;
+    align-items: center;
+    font-family: Montserrat;
+    font-size: var(--theme-typography-font-size-x-small);
+    color: var(--theme-color-neutral-15);
+    background: var(--theme-color-neutral-35);
+    padding-bottom: 30px;
+}
+.copyright {
+    flex: 1;
+}
+.copyright span {
+    padding-left: 30px;
+}
+.links {
+    text-align: end;
+}
+.links span {
+    padding-right: 30px;
 }

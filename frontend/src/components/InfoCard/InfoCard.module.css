@@ -1,8 +1,8 @@
-@import '../../styles/variables/colors.css';
-@import '../../styles/variables/typography.css';
+@import '../../styles/variables/_variables.css';
 
 .cardContainer {
     box-shadow: var(--theme-color-box-shadow) !important;
+    font-family: Montserrat;
 }
 
 .cardHeader {
@@ -10,8 +10,9 @@
     margin-top: 20px !important;
     color: var(--theme-color-neutral-10);
     margin-bottom: 25px;
-    font-weight: var(--theme-typography-front-weight-mid);
+    font-weight: var(--theme-typography-font-weight-mid);
     position: relative;
+    font-family: Montserrat;
 }
 
 .cardHeaderIcon {
@@ -19,6 +20,10 @@
     width: 93px;
     top: -8px;
     left: 5px;
+}
+
+.cardHeaderTitle {
+    font-family: Montserrat;
 }
 
 .firstCardHeader {
@@ -33,7 +38,7 @@
     height: 64px;
     margin-top: 15px;
     color: var(--theme-color-neutral-10);
-    font-weight: var(--theme-typography-front-weight-mid);
+    font-weight: var(--theme-typography-font-weight-mid);
 }
 
 .descriptionImage {

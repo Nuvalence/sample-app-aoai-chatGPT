@@ -1,7 +1,7 @@
 :root {
     --theme-typography-font-weight-normal: 400;
-    --theme-typography-front-weight-mid: 600;
-    --theme-typography-front-weight-bold: 700;
+    --theme-typography-font-weight-mid: 600;
+    --theme-typography-font-weight-bold: 700;
 
     --theme-typography-font-size-xx-small: 10px;
     --theme-typography-font-size-x-small: 12px;

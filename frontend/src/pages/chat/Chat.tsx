@@ -1,7 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 import { Stack } from "@fluentui/react";
 import {
-  BroomRegular,
   DismissRegular,
   SquareRegular,
   ShieldLockRegular,
@@ -16,6 +15,7 @@ import styles from "./Chat.module.css";
 import MyCityTitle from "../../assets/MyCityTitle.svg";
 import UserAvatar from "../../assets/UserAvatar.svg";
 import AiAvatar from "../../assets/AiAvatar.svg";
+import Conversation from "../../assets/Conversation.svg";
 
 import {
   ChatMessage,
@@ -307,7 +307,11 @@ const Chat = () => {
                   </>
                 ))}
                 {showLoadingMessage && (
-                  <>
+                  <div
+                    className={styles.chatMessageStream}
+                    style={{ marginBottom: isLoading ? "40px" : "0px" }}
+                    role="log"
+                  >
                     <div className={styles.chatMessageWrapper}>
                       <img
                         src={UserAvatar}
@@ -315,10 +319,10 @@ const Chat = () => {
                         aria-hidden="true"
                       />
                       <div className={styles.chatMessageUser} tabIndex={0}>
-                          <div className={styles.chatMessageUserMessage}>
-                            {lastQuestionRef.current}
-                          </div>
+                        <div className={styles.chatMessageUserMessage}>
+                          {lastQuestionRef.current}
                         </div>
+                      </div>
                     </div>
                     <div className={styles.chatMessageWrapper}>
                       <img
@@ -334,7 +338,7 @@ const Chat = () => {
                         onCitationClicked={() => null}
                       />
                     </div>
-                  </>
+                  </div>
                 )}
                 <div ref={chatMessageStreamEnd} />
               </div>
@@ -364,6 +368,16 @@ const Chat = () => {
                     Stop generating
                   </span>
                 </Stack>
+              )}
+              {lastQuestionRef.current && !isLoading && (
+                <div className={styles.newConversation} onClick={clearChat}>
+                  <img
+                    src={Conversation}
+                    className={styles.newMessageIcon}
+                    aria-hidden="true"
+                  />
+                  <span>New Conversation</span>
+                </div>
               )}
               <QuestionInput
                 clearOnSend

@@ -1,32 +1,22 @@
-@import '../../styles/variables/colors.css';
+@import '../../styles/variables/_variables.css';
 
 .container {
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 20px;
+  font-family: Lora;
 }
 
 .chatRoot {
   flex: 1;
   display: flex;
-  margin-top: 0px;
-  margin-bottom: 20px;
-  margin-left: 20px;
-  margin-right: 20px;
-  gap: 20px;
-}
-
-.chatContainer {
-  flex: 1;
-  display: flex;
   flex-direction: column;
+  margin-top: 0px;
+  background: var(--theme-color-neutral-35);
   align-items: center;
-  background: #fafafa;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.14), 0px 0px 2px rgba(0, 0, 0, 0.12);
-  border-radius: 8px;
+  gap: 20px;
   overflow-y: auto;
-  max-height: calc(100vh - 100px);
 }
 
 .chatEmptyState {
@@ -50,6 +40,7 @@
 }
 
 .chatEmptyStateSubtitle {
+  font-family: Montserrat;
   margin-top: 20px;
   font-style: normal;
   font-weight: 600;
@@ -78,6 +69,14 @@
     width: 100%;
   }
 }
+
+.chatContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
 .chatIcon {
   height: 30px;
   width: 299px;
@@ -95,14 +94,39 @@
 
 .chatMessageStream {
   flex-grow: 1;
-  max-width: 1028px;
   width: 100%;
   overflow-y: auto;
   padding-left: 24px;
   padding-right: 24px;
+  padding-bottom: 24px;
   display: flex;
   flex-direction: column;
   margin-top: 24px;
+}
+
+.newConversation {
+  background-color: var(--white);
+  max-width: 218px;
+  width: 100%;
+  height: 54px;
+  border: 1px solid var(--theme-color-neutral-20);
+  font-weight: var(--theme-typography-font-weight-mid);
+  color: var(--theme-color-neutral-15);
+  border-radius: 8px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: Montserrat;
+}
+
+.newConversation:hover {
+  background-color: var(--theme-color-neutral-30);
+  cursor: pointer;
+}
+
+.newMessageIcon {
+  padding-right: 6px;
 }
 
 .chatMessageUser {
@@ -131,7 +155,7 @@
   background: var(--white, #fff);
 
   color: #0d0c0c;
-  font-size: 18px;
+  font-size: 16px;
   font-style: normal;
   font-weight: 500;
   line-height: 100%; /* 16px */
@@ -172,7 +196,7 @@
 }
 
 .chatMessageErrorContent {
-  font-family: "Segoe UI";
+  font-family: Montserrat;
   font-style: normal;
   font-weight: 400;
   font-size: 14px;
@@ -251,7 +275,7 @@
 }
 
 .stopGeneratingText {
-  width: 103px;
+  width: 110px;
   height: 20px;
   font-style: normal;
   font-weight: 600;
@@ -271,7 +295,7 @@
   align-items: flex-start;
   padding: 16px 16px;
   gap: 8px;
-  background: #ffffff;
+  background: var(--white);
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.14), 0px 0px 2px rgba(0, 0, 0, 0.12);
   border-radius: 8px;
   flex: auto;
@@ -324,7 +348,7 @@
   font-weight: 400;
   font-size: 14px;
   line-height: 20px;
-  color: #000000;
+  color: var(--black);
   flex: none;
   order: 1;
   align-self: stretch;
