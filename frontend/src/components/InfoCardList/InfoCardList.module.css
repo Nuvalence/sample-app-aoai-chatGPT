@@ -5,7 +5,6 @@
     grid-template-columns: repeat(3, 1fr);
     gap: 27px;
     padding: 20px;
-    height: 350px;
     margin-top: 2%;
     margin-bottom: 10%;
 }

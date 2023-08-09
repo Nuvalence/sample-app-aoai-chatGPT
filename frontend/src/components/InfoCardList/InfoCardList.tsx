@@ -19,17 +19,17 @@ const cardList: IInfoCard[] = [
         },
         details: [
             { 
-                info: '"Is alternate side street parking in effect?"',
+                info: '"How do I avoid noise violations and complaints for my construction company?"',
                 icon: RightArrow,
                 emitQuestion: true,
             },
             { 
-                info: '"I\'d like to start a new cafe and bakery in Manhattan"',
+                info: '"I\'d like to start a new cafe and bakery in Manhattan."',
                 icon: RightArrow,
                 emitQuestion: true,
             },
             { 
-                info: 'How do I file a pothole complaint?',
+                info: '"How do I apply for the MWBE program?"',
                 icon: RightArrow,
                 emitQuestion: true,
             }
