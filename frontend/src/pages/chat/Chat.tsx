@@ -272,11 +272,13 @@ const Chat = () => {
                       </div>
                     ) : answer.role === "assistant" ? (
                       <div className={styles.chatMessageWrapper}>
-                        <img
-                          src={AiAvatar}
-                          className={styles.chatUserAvatarIcon}
-                          aria-hidden="true"
-                        />
+                        <div className={styles.answerIconContainer}>
+                          <img
+                            src={AiAvatar}
+                            className={styles.chatUserAvatarIcon}
+                            aria-hidden="true"
+                          />
+                        </div>
                         <Answer
                           answer={{
                             answer: answer.content,
