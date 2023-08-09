@@ -92,6 +92,12 @@
   width: 40px;
 }
 
+.answerIconContainer{
+  height: 100%;
+  display: inline;
+  position:relative;
+}
+
 .chatMessageStream {
   flex-grow: 1;
   width: 100%;
@@ -102,6 +108,8 @@
   display: flex;
   flex-direction: column;
   margin-top: 24px;
+  height: 70vh;
+  align-items: center;
 }
 
 .newConversation {
@@ -140,6 +148,7 @@
   display: flex;
   align-items: center;
   margin-bottom: 18px;
+  width: 70%;
 }
 
 .chatMessageUserMessage {
