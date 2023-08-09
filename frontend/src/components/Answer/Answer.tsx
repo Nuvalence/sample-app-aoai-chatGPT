@@ -76,7 +76,7 @@ export const Answer = ({
                                     tabIndex={0}
                                     role="button"
                                 >
-                                <span>{parsedAnswer.citations.length > 1 ? parsedAnswer.citations.length + "Supporting references" : "Supporting reference"}</span>
+                                <span>{parsedAnswer.citations.length > 1 ? parsedAnswer.citations.length + " Supporting references" : "Supporting reference"}</span>
                                 </Text>
                                 <FontIcon className={styles.accordionIcon}
                                 onClick={handleChevronClick} iconName={chevronIsExpanded ? 'ChevronDown' : 'ChevronRight'}
