@@ -310,7 +310,7 @@ const Chat = () => {
                 ))}
                 {showLoadingMessage && (
                   <div
-                    className={styles.chatMessageStream}
+                    className={styles.chatMessageStreamLoading}
                     style={{ marginBottom: isLoading ? "40px" : "0px" }}
                     role="log"
                   >
@@ -327,11 +327,13 @@ const Chat = () => {
                       </div>
                     </div>
                     <div className={styles.chatMessageWrapper}>
-                      <img
-                        src={AiAvatar}
-                        className={styles.chatUserAvatarIcon}
-                        aria-hidden="true"
-                      />
+                      <div className={styles.answerIconContainer}>
+                          <img
+                            src={AiAvatar}
+                            className={styles.chatUserAvatarIcon}
+                            aria-hidden="true"
+                          />
+                        </div>
                       <Answer
                         answer={{
                           answer: "Generating answer...",

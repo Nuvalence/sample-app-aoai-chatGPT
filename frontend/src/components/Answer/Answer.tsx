@@ -88,7 +88,7 @@ export const Answer = ({
                 )}
                 </Stack>
                 {chevronIsExpanded && 
-                    <div style={{ marginTop: 8, display: "flex", flexFlow: "wrap column", maxHeight: "150px", gap: "4px" }}>
+                    <div style={{ marginTop: 8, display: "flex", flexFlow: "wrap", maxHeight: "150px", gap: "4px" }}>
                         {parsedAnswer.citations.map((citation, idx) => {
                             return (
                                 <div 

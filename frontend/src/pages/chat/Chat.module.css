@@ -111,6 +111,20 @@
   align-items: center;
 }
 
+
+.chatMessageStreamLoading {
+  flex-grow: 1;
+  width: 100%;
+  padding-left: 24px;
+  padding-right: 24px;
+  padding-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  margin-top: 24px;
+  height: 45vh;
+  align-items: center;
+}
+
 .newConversation {
   background-color: var(--white);
   max-width: 218px;
@@ -308,7 +322,6 @@
   align-self: stretch;
   flex-grow: 0.3;
   max-width: 30%;
-  overflow-y: scroll;
   max-height: calc(100vh - 100px);
 }
 
