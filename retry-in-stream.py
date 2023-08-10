@@ -6,7 +6,7 @@ import random
 import requests
 import time
 import openai
-from flask import Flask, Response, request, jsonify, send_from_directory, copy_current_request_context
+from flask import Flask, Response, request, jsonify, send_from_directory, copy_current_request_context, current_app
 from dotenv import load_dotenv
 from opencensus.ext.azure.log_exporter import AzureLogHandler
 

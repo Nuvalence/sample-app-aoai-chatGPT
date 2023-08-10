@@ -107,7 +107,7 @@ openai_model_names = [AZURE_OPENAI_MODEL_NAME, AZURE_OPENAI_MODEL_NAME_NC, AZURE
 # -----------------------------------------------------------------------------
 # Endpoint randomization stuff
 # -----------------------------------------------------------------------------
-max_retries = 3
+total_endpoints = 3
 
 
 def generate_endpoint(ndx):
@@ -118,7 +118,7 @@ def generate_endpoint(ndx):
 
 
 def next_index(ndx):
-    return (ndx + 1) % max_retries
+    return (ndx + 1) % total_endpoints
 
 
 # -----------------------------------------------------------------------------
@@ -131,14 +131,8 @@ def is_chat_model():
     return False
 
 
-def should_use_data():
-    if AZURE_SEARCH_SERVICE and AZURE_SEARCH_INDEX and AZURE_SEARCH_KEY:
-        return True
-    return False
-
-
-def prepare_body_headers_with_data(request, ndx):
-    request_messages = request.json["messages"]
+def prepare_body_headers_with_data(r, ndx):
+    request_messages = r.json["messages"]
     openai_key = openai_keys[ndx]
     openai_resource = openai_resources[ndx]
     openai_model = openai_models[ndx]
@@ -206,25 +200,7 @@ def stream_with_data(body, headers, endpoint):
     logger.info("stream_with_data: starting POST with retries")
     start_time = time.time()
     try:
-        for retry in range(max_retries):
-            try:
-                r = s.post(endpoint, json=body, headers=headers, stream=True, timeout=10)
-                r.raise_for_status()
-                break
-            except requests.exceptions.Timeout:
-                logger.error(f"POST timed out on attempt {retry}")
-                if retry < max_retries - 1:
-                    logger.error("Retrying...")
-                else:
-                    logger.error("Giving up and returning an error")
-                    yield json.dumps({"error": "Something went wrong, please try again."}) + "\n"
-                    return
-            except requests.exceptions.RequestException as e:
-                logger.error("An error occurred:", e)
-                yield json.dumps({"error": "Something went wrong, please try again."}) + "\n"
-                return
-
-        with r:
+        with s.post(endpoint, json=body, headers=headers, stream=True, timeout=5) as r:
             total_time = round(time.time() - start_time, 3)
             logger.info(f"stream_with_data: POST completed in {total_time} seconds, processing response lines")
             start_time = time.time()
@@ -259,29 +235,24 @@ def stream_with_data(body, headers, endpoint):
         yield json.dumps({"error": "Something went wrong, please try again."}) + "\n"
 
 
-def conversation_with_data(request):
-    current_index = random.randint(0, max_retries - 1)
-    for retry in range(max_retries):
+def conversation_with_data(headers_arr, body_arr, endpoint_arr):
+    current_index = 0 # random.randint(0, total_endpoints - 1)
+    for retry in range(total_endpoints):
         try:
-            body, headers = prepare_body_headers_with_data(request, current_index)
-            openai_resource = openai_resources[current_index]
-            openai_model = openai_models[current_index]
-            endpoint = f"https://{openai_resource}.openai.azure.com/openai/deployments/{openai_model}/extensions/chat/completions?api-version={AZURE_OPENAI_PREVIEW_API_VERSION}"
+            headers = headers_arr[current_index]
+            body = body_arr[current_index]
+            endpoint = endpoint_arr[current_index]
+            # return geez(headers_arr, body_arr, endpoint_arr)
+            return Response(stream_with_data(body, headers, endpoint), mimetype='text/event-stream')
 
-            if not SHOULD_STREAM:
-                r = requests.post(endpoint, headers=headers, json=body)
-                status_code = r.status_code
-                r = r.json()
+            # r = requests.post(endpoint, headers=headers, json=body)
+            # status_code = r.status_code
+            # r = r.json()
+            # return Response(json.dumps(r).replace("\n", "\\n"), status=status_code)
 
-                return Response(json.dumps(r).replace("\n", "\\n"), status=status_code)
-            else:
-                if request.method == "POST":
-                    return Response(stream_with_data(body, headers, endpoint), mimetype='text/event-stream')
-                else:
-                    return Response(None, mimetype='text/event-stream')
         except requests.exceptions.Timeout:
             logger.error(f"POST timed out on attempt {retry}")
-            if retry < max_retries - 1:
+            if retry < total_endpoints - 1:
                 logger.error("Retrying...")
             else:
                 logger.error("Giving up and returning an error")
@@ -298,7 +269,7 @@ def blah(request):
     body, headers = prepare_body_headers_with_data(request, 0)
     endpoint = f"https://{AZURE_OPENAI_RESOURCE}.openai.azure.com/openai/deployments/{AZURE_OPENAI_MODEL}/extensions/chat/completions?api-version={AZURE_OPENAI_PREVIEW_API_VERSION}"
 
-    if not SHOULD_STREAM:
+    if SHOULD_STREAM:
         r = requests.post(endpoint, headers=headers, json=body)
         status_code = r.status_code
         r = r.json()
@@ -311,89 +282,33 @@ def blah(request):
             return Response(None, mimetype='text/event-stream')
 
 
-def stream_without_data(response):
-    responseText = ""
-    for line in response:
-        deltaText = line["choices"][0]["delta"].get('content')
-        if deltaText and deltaText != "[DONE]":
-            responseText += deltaText
+def geez(headers_arr, body_arr, endpoint_arr):
+    current_index = 0
+    headers = headers_arr[current_index]
+    body = body_arr[current_index]
+    endpoint = endpoint_arr[current_index]
+    return Response(stream_with_data(body, headers, endpoint), mimetype='text/event-stream')
 
-        response_obj = {
-            "id": line["id"],
-            "model": line["model"],
-            "created": line["created"],
-            "object": line["object"],
-            "choices": [{
-                "messages": [{
-                    "role": "assistant",
-                    "content": responseText
-                }]
-            }]
-        }
-        yield json.dumps(response_obj).replace("\n", "\\n") + "\n"
-
-
-def conversation_without_data(request):
-    openai.api_type = "azure"
-    openai.api_base = f"https://{AZURE_OPENAI_RESOURCE}.openai.azure.com/"
-    openai.api_version = "2023-03-15-preview"
-    openai.api_key = AZURE_OPENAI_KEY
-
-    request_messages = request.json["messages"]
-    messages = [
-        {
-            "role": "system",
-            "content": AZURE_OPENAI_SYSTEM_MESSAGE
-        }
-    ]
-
-    for message in request_messages:
-        messages.append({
-            "role": message["role"],
-            "content": message["content"]
-        })
-
-    response = openai.ChatCompletion.create(
-        engine=AZURE_OPENAI_MODEL,
-        messages=messages,
-        temperature=float(AZURE_OPENAI_TEMPERATURE),
-        max_tokens=int(AZURE_OPENAI_MAX_TOKENS),
-        top_p=float(AZURE_OPENAI_TOP_P),
-        stop=AZURE_OPENAI_STOP_SEQUENCE.split("|") if AZURE_OPENAI_STOP_SEQUENCE else None,
-        stream=SHOULD_STREAM
-    )
-
-    if not SHOULD_STREAM:
-        response_obj = {
-            "id": response,
-            "model": response.model,
-            "created": response.created,
-            "object": response.object,
-            "choices": [{
-                "messages": [{
-                    "role": "assistant",
-                    "content": response.choices[0].message.content
-                }]
-            }]
-        }
-
-        return jsonify(response_obj), 200
-    else:
-        if request.method == "POST":
-            return Response(stream_without_data(response), mimetype='text/event-stream')
-        else:
-            return Response(None, mimetype='text/event-stream')
-
+def compute_endpoints():
+    headers_arr = []
+    body_arr = []
+    endpoint_arr = []
+    for i in range(total_endpoints):
+        body, headers = prepare_body_headers_with_data(request, i)
+        endpoint = generate_endpoint(i)
+        headers_arr.append(headers)
+        body_arr.append(body)
+        endpoint_arr.append(endpoint)
+    return headers_arr, body_arr, endpoint_arr
 
 @app.route("/conversation", methods=["GET", "POST"])
 def conversation():
     try:
-        use_data = should_use_data()
-        logger.info(f"conversation: start of conversation, use data = {use_data}")
-        if use_data:
-            return conversation_with_data(request)
-        else:
-            return conversation_without_data(request)
+        logger.info(f"conversation: start of conversation")
+        headers_arr, body_arr, endpoint_arr = compute_endpoints()
+        return conversation_with_data(headers_arr, body_arr, endpoint_arr)
+        # return geez(headers_arr, body_arr, endpoint_arr)
+        # return blah(request)
     except Exception as e:
         logging.exception("Exception in /conversation")
         return jsonify({"error": str(e)}), 500
