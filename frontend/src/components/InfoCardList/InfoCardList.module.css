@@ -5,8 +5,6 @@
     grid-template-columns: repeat(3, 1fr);
     gap: 27px;
     padding: 20px;
-    margin-top: 2%;
-    margin-bottom: 10%;
 }
 
 @media(max-width: 800px) {

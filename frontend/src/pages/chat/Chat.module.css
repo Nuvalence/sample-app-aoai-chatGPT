@@ -84,7 +84,7 @@
 .titleIcon {
     height: 30px;
     width: 299px;
-    margin-top: 5%;
+    margin-top: 2%;
   }
 .chatUserAvatarIcon {
   height: 40px;
@@ -107,7 +107,7 @@
   display: flex;
   flex-direction: column;
   margin-top: 24px;
-  height: 70vh;
+  height: 45vh;
   align-items: center;
 }
 
@@ -120,7 +120,7 @@
   font-weight: var(--theme-typography-font-weight-mid);
   color: var(--theme-color-neutral-15);
   border-radius: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -148,6 +148,7 @@
   align-items: center;
   margin-bottom: 18px;
   width: 70%;
+  max-width: 1224px;
 }
 
 .chatMessageUserMessage {
@@ -224,7 +225,6 @@
   padding-right: 24px;
   width: calc(100% - 100px);
   max-width: 1028px;
-  margin-bottom: 50px;
   margin-top: 8px;
   display: flex;
   flex-direction: column;
@@ -238,7 +238,6 @@
     padding-left: 12px;
     padding-right: 12px;
     max-width: 1028px;
-    margin-bottom: 50px;
     margin-top: 8px;
     display: flex;
     flex-direction: column;
@@ -266,11 +265,9 @@
   align-items: center;
   padding: 5px 16px;
   gap: 4px;
-  position: absolute;
   width: 161px;
   height: 32px;
   left: calc(50% - 161px / 2 + 25.8px);
-  bottom: 116px;
   border: 1px solid #d1d1d1;
   border-radius: 16px;
   margin-bottom: 20px;

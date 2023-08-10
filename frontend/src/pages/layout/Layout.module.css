@@ -162,7 +162,7 @@
     font-size: var(--theme-typography-font-size-x-small);
     color: var(--theme-color-neutral-15);
     background: var(--theme-color-neutral-35);
-    padding-bottom: 30px;
+    padding-bottom: 10px;
 }
 .copyright {
     flex: 1;
