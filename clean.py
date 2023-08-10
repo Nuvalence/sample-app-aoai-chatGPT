@@ -203,103 +203,64 @@ def stream_with_data(body, headers, endpoint):
         }]
     }
 
-    logger.info("stream_with_data: starting POST with retries")
+    logger.info("stream_with_data: starting POST")
     start_time = time.time()
-    try:
-        for retry in range(max_retries):
-            try:
-                r = s.post(endpoint, json=body, headers=headers, stream=True, timeout=10)
-                r.raise_for_status()
-                break
-            except requests.exceptions.Timeout:
-                logger.error(f"POST timed out on attempt {retry}")
-                if retry < max_retries - 1:
-                    logger.error("Retrying...")
+    r = s.post(endpoint, json=body, headers=headers, stream=True, timeout=10)
+    logger.info(f"stream_with_data: status code of call: {r.status_code}")
+    if r.status_code != 200:
+        return None
+
+    with r:
+        total_time = round(time.time() - start_time, 3)
+        logger.info(f"stream_with_data: POST completed in {total_time} seconds, processing response lines")
+        start_time = time.time()
+        for line in r.iter_lines(chunk_size=10):
+            if line:
+                line_json = json.loads(line.lstrip(b'data:').decode('utf-8'))
+                if 'error' in line_json:
+                    yield json.dumps(line_json).replace("\n", "\\n") + "\n"
+                response["id"] = line_json["id"]
+                response["model"] = line_json["model"]
+                response["created"] = line_json["created"]
+                response["object"] = line_json["object"]
+
+                role = line_json["choices"][0]["messages"][0]["delta"].get("role")
+                if role == "tool":
+                    response["choices"][0]["messages"].append(line_json["choices"][0]["messages"][0]["delta"])
+                elif role == "assistant":
+                    response["choices"][0]["messages"].append({
+                        "role": "assistant",
+                        "content": ""
+                    })
                 else:
-                    logger.error("Giving up and returning an error")
-                    yield json.dumps({"error": "Something went wrong, please try again."}) + "\n"
-                    return
-            except requests.exceptions.RequestException as e:
-                logger.error("An error occurred:", e)
-                yield json.dumps({"error": "Something went wrong, please try again."}) + "\n"
-                return
+                    deltaText = line_json["choices"][0]["messages"][0]["delta"]["content"]
+                    if deltaText != "[DONE]":
+                        response["choices"][0]["messages"][1]["content"] += deltaText
 
-        with r:
-            total_time = round(time.time() - start_time, 3)
-            logger.info(f"stream_with_data: POST completed in {total_time} seconds, processing response lines")
-            start_time = time.time()
-            for line in r.iter_lines(chunk_size=10):
-                if line:
-                    line_json = json.loads(line.lstrip(b'data:').decode('utf-8'))
-                    if 'error' in line_json:
-                        yield json.dumps(line_json).replace("\n", "\\n") + "\n"
-                    response["id"] = line_json["id"]
-                    response["model"] = line_json["model"]
-                    response["created"] = line_json["created"]
-                    response["object"] = line_json["object"]
-
-                    role = line_json["choices"][0]["messages"][0]["delta"].get("role")
-                    if role == "tool":
-                        response["choices"][0]["messages"].append(line_json["choices"][0]["messages"][0]["delta"])
-                    elif role == "assistant":
-                        response["choices"][0]["messages"].append({
-                            "role": "assistant",
-                            "content": ""
-                        })
-                    else:
-                        deltaText = line_json["choices"][0]["messages"][0]["delta"]["content"]
-                        if deltaText != "[DONE]":
-                            response["choices"][0]["messages"][1]["content"] += deltaText
-
-                    yield json.dumps(response).replace("\n", "\\n") + "\n"
-            total_time = round(time.time() - start_time, 3)
-            logger.info(f"stream_with_data: lines processed in {total_time} seconds")
-    except Exception as e:
-        logger.error(f"stream_with_data: exception processing response: {str(e)}")
-        yield json.dumps({"error": "Something went wrong, please try again."}) + "\n"
-
-
-def blah(request):
-    body, headers = prepare_body_headers_with_data(request, 0)
-    endpoint = f"https://{AZURE_OPENAI_RESOURCE}.openai.azure.com/openai/deployments/{AZURE_OPENAI_MODEL}/extensions/chat/completions?api-version={AZURE_OPENAI_PREVIEW_API_VERSION}"
-
-    if not SHOULD_STREAM:
-        r = requests.post(endpoint, headers=headers, json=body)
-        status_code = r.status_code
-        r = r.json()
-
-        return Response(json.dumps(r).replace("\n", "\\n"), status=status_code)
-    else:
-        if request.method == "POST":
-            return Response(stream_with_data(body, headers, endpoint), mimetype='text/event-stream')
-        else:
-            return Response(None, mimetype='text/event-stream')
+                yield json.dumps(response).replace("\n", "\\n") + "\n"
+        total_time = round(time.time() - start_time, 3)
+        logger.info(f"stream_with_data: lines processed in {total_time} seconds")
 
 
 @app.route("/conversation", methods=["GET", "POST"])
 def conversation():
     current_index = random.randint(0, max_retries - 1)
     for retry in range(max_retries):
-        try:
-            body, headers = prepare_body_headers_with_data(request, current_index)
-            openai_resource = openai_resources[current_index]
-            openai_model = openai_models[current_index]
-            endpoint = f"https://{openai_resource}.openai.azure.com/openai/deployments/{openai_model}/extensions/chat/completions?api-version={AZURE_OPENAI_PREVIEW_API_VERSION}"
-            return Response(stream_with_data(body, headers, endpoint), mimetype='text/event-stream')
-
-        except requests.exceptions.Timeout:
-            logger.error(f"POST timed out on attempt {retry}")
+        body, headers = prepare_body_headers_with_data(request, current_index)
+        openai_resource = openai_resources[current_index]
+        openai_model = openai_models[current_index]
+        endpoint = f"https://{openai_resource}.openai.azure.com/openai/deployments/{openai_model}/extensions/chat/completions?api-version={AZURE_OPENAI_PREVIEW_API_VERSION}"
+        data_stream = stream_with_data(body, headers, endpoint)
+        if data_stream is not None and next(data_stream, None) is not None:
+            logger.info("Data stream received, sending response to client")
+            return Response(data_stream, mimetype='text/event-stream')
+        else:
             if retry < max_retries - 1:
                 logger.error("Retrying...")
+                current_index = next_index(current_index)
             else:
                 logger.error("Giving up and returning an error")
                 return Response(json.dumps({"error": "Something went wrong, please try again."}) + "\n")
-        except requests.exceptions.RequestException as e:
-            logger.error("An error occurred:", e)
-            return Response(json.dumps({"error": "Something went wrong, please try again."}) + "\n")
-        except Exception as e:
-            logging.exception("Exception in /conversation")
-            return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":
