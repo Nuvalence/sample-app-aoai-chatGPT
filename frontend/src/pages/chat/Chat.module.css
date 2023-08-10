@@ -16,7 +16,6 @@
   background: var(--theme-color-neutral-35);
   align-items: center;
   gap: 20px;
-  overflow-y: auto;
 }
 
 .chatEmptyState {
