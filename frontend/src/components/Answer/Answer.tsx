@@ -91,7 +91,7 @@ export const Answer = ({
                     <div style={{ marginTop: 8, display: "flex", flexFlow: "wrap column", maxHeight: "150px", gap: "4px" }}>
                         {parsedAnswer.citations.map((citation, idx) => {
                             return (
-                                <span 
+                                <div 
                                     title={createCitationFilepath(citation, ++idx)} 
                                     tabIndex={0} 
                                     role="link" 
@@ -101,7 +101,7 @@ export const Answer = ({
                                     aria-label={createCitationFilepath(citation, idx)}
                                 >
                                     {createCitationFilepath(citation, idx, true)}
-                                </span>);
+                                </div>);
                         })}
                     </div>
                 }
