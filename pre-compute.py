@@ -94,7 +94,7 @@ AZURE_OPENAI_MODEL_NC = os.environ.get("AZURE_OPENAI_MODEL_NC")
 AZURE_OPENAI_MODEL_NAME_NC = os.environ.get("AZURE_OPENAI_MODEL_NAME_NC")
 
 AZURE_OPENAI_KEY_US2 = os.environ.get("AZURE_OPENAI_KEY_US2")
-AZURE_OPENAI_RESOURCE_US2 = os.environ.get("AZURE_OPENAI_RESOURCE_US2")
+AZURE_OPENAI_RESOURCE_US2 = os.environ.get("AZURE_OPENAI_RESOURCE_NC")
 AZURE_OPENAI_MODEL_US2 = os.environ.get("AZURE_OPENAI_MODEL_US2")
 AZURE_OPENAI_MODEL_NAME_US2 = os.environ.get("AZURE_OPENAI_MODEL_NAME_US2")
 
@@ -107,7 +107,7 @@ openai_model_names = [AZURE_OPENAI_MODEL_NAME, AZURE_OPENAI_MODEL_NAME_NC, AZURE
 # -----------------------------------------------------------------------------
 # Endpoint randomization stuff
 # -----------------------------------------------------------------------------
-max_retries = 3
+total_endpoints = 3
 
 
 def generate_endpoint(ndx):
@@ -118,7 +118,7 @@ def generate_endpoint(ndx):
 
 
 def next_index(ndx):
-    return (ndx + 1) % max_retries
+    return (ndx + 1) % total_endpoints
 
 
 # -----------------------------------------------------------------------------
@@ -131,14 +131,8 @@ def is_chat_model():
     return False
 
 
-def should_use_data():
-    if AZURE_SEARCH_SERVICE and AZURE_SEARCH_INDEX and AZURE_SEARCH_KEY:
-        return True
-    return False
-
-
-def prepare_body_headers_with_data(request, ndx):
-    request_messages = request.json["messages"]
+def prepare_body_headers_with_data(r, ndx):
+    request_messages = r.json["messages"]
     openai_key = openai_keys[ndx]
     openai_resource = openai_resources[ndx]
     openai_model = openai_models[ndx]
@@ -203,69 +197,121 @@ def stream_with_data(body, headers, endpoint):
         }]
     }
 
-    logger.info("stream_with_data: starting POST")
+    logger.info("stream_with_data: starting POST with retries")
     start_time = time.time()
     try:
-        r = s.post(endpoint, json=body, headers=headers, stream=True, timeout=10)
-    except Exception:
-        logger.error(f"Endpoint {endpoint} timed out")
-        return None
-    logger.info(f"stream_with_data: status code of call: {r.status_code}")
-    if r.status_code != 200:
-        return None
+        with s.post(endpoint, json=body, headers=headers, stream=True, timeout=5) as r:
+            total_time = round(time.time() - start_time, 3)
+            logger.info(f"stream_with_data: POST completed in {total_time} seconds, processing response lines")
+            start_time = time.time()
+            for line in r.iter_lines(chunk_size=10):
+                if line:
+                    line_json = json.loads(line.lstrip(b'data:').decode('utf-8'))
+                    if 'error' in line_json:
+                        yield json.dumps(line_json).replace("\n", "\\n") + "\n"
+                    response["id"] = line_json["id"]
+                    response["model"] = line_json["model"]
+                    response["created"] = line_json["created"]
+                    response["object"] = line_json["object"]
 
-    with r:
-        total_time = round(time.time() - start_time, 3)
-        logger.info(f"stream_with_data: POST completed in {total_time} seconds, processing response lines")
-        start_time = time.time()
-        for line in r.iter_lines(chunk_size=10):
-            if line:
-                line_json = json.loads(line.lstrip(b'data:').decode('utf-8'))
-                if 'error' in line_json:
-                    yield json.dumps(line_json).replace("\n", "\\n") + "\n"
-                response["id"] = line_json["id"]
-                response["model"] = line_json["model"]
-                response["created"] = line_json["created"]
-                response["object"] = line_json["object"]
+                    role = line_json["choices"][0]["messages"][0]["delta"].get("role")
+                    if role == "tool":
+                        response["choices"][0]["messages"].append(line_json["choices"][0]["messages"][0]["delta"])
+                    elif role == "assistant":
+                        response["choices"][0]["messages"].append({
+                            "role": "assistant",
+                            "content": ""
+                        })
+                    else:
+                        deltaText = line_json["choices"][0]["messages"][0]["delta"]["content"]
+                        if deltaText != "[DONE]":
+                            response["choices"][0]["messages"][1]["content"] += deltaText
 
-                role = line_json["choices"][0]["messages"][0]["delta"].get("role")
-                if role == "tool":
-                    response["choices"][0]["messages"].append(line_json["choices"][0]["messages"][0]["delta"])
-                elif role == "assistant":
-                    response["choices"][0]["messages"].append({
-                        "role": "assistant",
-                        "content": ""
-                    })
-                else:
-                    deltaText = line_json["choices"][0]["messages"][0]["delta"]["content"]
-                    if deltaText != "[DONE]":
-                        response["choices"][0]["messages"][1]["content"] += deltaText
+                    yield json.dumps(response).replace("\n", "\\n") + "\n"
+            total_time = round(time.time() - start_time, 3)
+            logger.info(f"stream_with_data: lines processed in {total_time} seconds")
+    except Exception as e:
+        logger.error(f"stream_with_data: exception processing response: {str(e)}")
+        yield json.dumps({"error": "Something went wrong, please try again."}) + "\n"
 
-                yield json.dumps(response).replace("\n", "\\n") + "\n"
-        total_time = round(time.time() - start_time, 3)
-        logger.info(f"stream_with_data: lines processed in {total_time} seconds")
 
+def conversation_with_data(headers_arr, body_arr, endpoint_arr):
+    current_index = 0 # random.randint(0, total_endpoints - 1)
+    for retry in range(total_endpoints):
+        try:
+            headers = headers_arr[current_index]
+            body = body_arr[current_index]
+            endpoint = endpoint_arr[current_index]
+            # return geez(headers_arr, body_arr, endpoint_arr)
+            return Response(stream_with_data(body, headers, endpoint), mimetype='text/event-stream')
+
+            # r = requests.post(endpoint, headers=headers, json=body)
+            # status_code = r.status_code
+            # r = r.json()
+            # return Response(json.dumps(r).replace("\n", "\\n"), status=status_code)
+
+        except requests.exceptions.Timeout:
+            logger.error(f"POST timed out on attempt {retry}")
+            if retry < total_endpoints - 1:
+                logger.error("Retrying...")
+            else:
+                logger.error("Giving up and returning an error")
+                yield json.dumps({"error": "Something went wrong, please try again."}) + "\n"
+                return
+        except requests.exceptions.RequestException as e:
+            logger.error("An error occurred:", e)
+            yield json.dumps({"error": "Something went wrong, please try again."}) + "\n"
+            return
+
+
+
+def blah(request):
+    body, headers = prepare_body_headers_with_data(request, 0)
+    endpoint = f"https://{AZURE_OPENAI_RESOURCE}.openai.azure.com/openai/deployments/{AZURE_OPENAI_MODEL}/extensions/chat/completions?api-version={AZURE_OPENAI_PREVIEW_API_VERSION}"
+
+    if SHOULD_STREAM:
+        r = requests.post(endpoint, headers=headers, json=body)
+        status_code = r.status_code
+        r = r.json()
+
+        return Response(json.dumps(r).replace("\n", "\\n"), status=status_code)
+    else:
+        if request.method == "POST":
+            return Response(stream_with_data(body, headers, endpoint), mimetype='text/event-stream')
+        else:
+            return Response(None, mimetype='text/event-stream')
+
+
+def geez(headers_arr, body_arr, endpoint_arr):
+    current_index = 0
+    headers = headers_arr[current_index]
+    body = body_arr[current_index]
+    endpoint = endpoint_arr[current_index]
+    return Response(stream_with_data(body, headers, endpoint), mimetype='text/event-stream')
+
+def compute_endpoints():
+    headers_arr = []
+    body_arr = []
+    endpoint_arr = []
+    for i in range(total_endpoints):
+        body, headers = prepare_body_headers_with_data(request, i)
+        endpoint = generate_endpoint(i)
+        headers_arr.append(headers)
+        body_arr.append(body)
+        endpoint_arr.append(endpoint)
+    return headers_arr, body_arr, endpoint_arr
 
 @app.route("/conversation", methods=["GET", "POST"])
 def conversation():
-    current_index = random.randint(0, max_retries - 1)
-    for retry in range(max_retries):
-        logger.info(f"####### Retry #{retry} Using index #{current_index}")
-        body, headers = prepare_body_headers_with_data(request, current_index)
-        openai_resource = openai_resources[current_index]
-        openai_model = openai_models[current_index]
-        endpoint = f"https://{openai_resource}.openai.azure.com/openai/deployments/{openai_model}/extensions/chat/completions?api-version={AZURE_OPENAI_PREVIEW_API_VERSION}"
-        data_stream = stream_with_data(body, headers, endpoint)
-        if data_stream is not None and next(data_stream, None) is not None:
-            logger.info("Data stream received, sending response to client")
-            return Response(data_stream, mimetype='text/event-stream')
-        else:
-            if retry < max_retries - 1:
-                logger.error("Retrying...")
-                current_index = next_index(current_index)
-            else:
-                logger.error("Giving up and returning an error")
-                return Response(json.dumps({"error": "Something went wrong, please try again."}) + "\n")
+    try:
+        logger.info(f"conversation: start of conversation")
+        headers_arr, body_arr, endpoint_arr = compute_endpoints()
+        return conversation_with_data(headers_arr, body_arr, endpoint_arr)
+        # return geez(headers_arr, body_arr, endpoint_arr)
+        # return blah(request)
+    except Exception as e:
+        logging.exception("Exception in /conversation")
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":
