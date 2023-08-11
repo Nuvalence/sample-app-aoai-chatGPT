@@ -45,8 +45,12 @@ export const InfoCard = ({ title, icon, details, onSendQuestion, isFirstCard }: 
                         className={`${styles.cardDescription} ${isFirstCard ? styles.firstCardDetails : ''}`}
                         onClick={() => handleDetailClick(detail)}
                         >
-                            <span>{detail.info}</span>
-                            {detail.icon && <img className={styles.descriptionImage} src={detail.icon} alt="Icon"/>}
+                            <div>
+                                <span>{detail.info}</span>
+                            </div>
+                            <div>
+                                {detail.icon && <img className={styles.descriptionImage} src={detail.icon} alt="Icon"/>}
+                            </div>
 
                         </div>
                     ))}
