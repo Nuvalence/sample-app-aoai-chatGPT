@@ -306,16 +306,6 @@ const Chat = () => {
                       </div>
                     ) : answer.role === "error" ? (
                       <div className={styles.chatMessageError}>
-                        <Stack
-                          horizontal
-                          className={styles.chatMessageErrorContent}
-                        >
-                          <ErrorCircleRegular
-                            className={styles.errorIcon}
-                            style={{ color: "rgba(182, 52, 67, 1)" }}
-                          />
-                          <span>Error</span>
-                        </Stack>
                         <span className={styles.chatMessageErrorContent}>
                           {answer.content}
                         </span>
