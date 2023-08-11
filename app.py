@@ -211,6 +211,9 @@ def stream_with_data(body, headers, endpoint):
         logger.error(f"Endpoint {endpoint} timed out")
         return None
     logger.info(f"stream_with_data: status code of call: {r.status_code}")
+    if r.status_code == 500:
+        yield json.dumps({"error": "Sorry I could not provide a response for that, please try another question."})
+        return
     if r.status_code != 200:
         return None
 
