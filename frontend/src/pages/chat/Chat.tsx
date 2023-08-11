@@ -158,9 +158,22 @@ const Chat = () => {
   }, []);
 
   useEffect(
-    () => chatMessageStreamEnd.current?.scrollIntoView({ behavior: "smooth" }),
-    [showLoadingMessage]
-  );
+    () => {
+      chatMessageStreamEnd.current?.scrollIntoView({ behavior: "smooth" });
+
+      const observer = new MutationObserver(() => {
+        chatMessageStreamEnd.current?.scrollIntoView({ behavior: "smooth" });
+      });
+
+      if (chatMessageStreamEnd && chatMessageStreamEnd.current) {
+        observer.observe(chatMessageStreamEnd.current, {childList: true, subtree: true});
+      }
+
+      return () => {
+        observer.disconnect();
+      };
+      [showLoadingMessage]
+  }, );
 
   const onShowCitation = (citation: Citation) => {
     setActiveCitation([
@@ -271,7 +284,8 @@ const Chat = () => {
                         </div>
                       </div>
                     ) : answer.role === "assistant" ? (
-                      <div className={styles.chatMessageWrapper}>
+                      <div
+                        className={styles.chatMessageWrapper}>
                         <div className={styles.answerIconContainer}>
                           <img
                             src={AiAvatar}
@@ -288,6 +302,7 @@ const Chat = () => {
                           }}
                           onCitationClicked={(c) => onShowCitation(c)}
                         />
+                        <div />
                       </div>
                     ) : answer.role === "error" ? (
                       <div className={styles.chatMessageError}>
