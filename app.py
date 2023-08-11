@@ -265,7 +265,7 @@ def conversation():
                 current_index = next_index(current_index)
             else:
                 logger.error("Giving up and returning an error")
-                return Response(json.dumps({"error": "Sorry, I could not answer that. Please try asking different question."}) + "\n")
+                return Response(json.dumps({"error": "Sorry, I could not answer that. Please try asking a different question."}) + "\n")
 
 
 if __name__ == "__main__":

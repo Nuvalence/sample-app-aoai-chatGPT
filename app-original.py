@@ -217,11 +217,11 @@ def stream_with_data(body, headers, endpoint):
                     logger.error("Retrying...")
                 else:
                     logger.error("Giving up and returning an error")
-                    yield json.dumps({"error": "Sorry, I could not answer that. Please try asking different question"}) + "\n"
+                    yield json.dumps({"error": "Sorry, I could not answer that. Please try asking a different question"}) + "\n"
                     return
             except requests.exceptions.RequestException as e:
                 logger.error("An error occurred:", e)
-                yield json.dumps({"error": "Sorry, I could not answer that. Please try asking different question"}) + "\n"
+                yield json.dumps({"error": "Sorry, I could not answer that. Please try asking a different question"}) + "\n"
                 return
 
         with r:
@@ -256,7 +256,7 @@ def stream_with_data(body, headers, endpoint):
             logger.info(f"stream_with_data: lines processed in {total_time} seconds")
     except Exception as e:
         logger.error(f"stream_with_data: exception processing response: {str(e)}")
-        yield json.dumps({"error": "Sorry, I could not answer that. Please try asking different question"}) + "\n"
+        yield json.dumps({"error": "Sorry, I could not answer that. Please try asking a different question"}) + "\n"
 
 
 def conversation_with_data(request):
@@ -285,11 +285,11 @@ def conversation_with_data(request):
                 logger.error("Retrying...")
             else:
                 logger.error("Giving up and returning an error")
-                yield json.dumps({"error": "Sorry, I could not answer that. Please try asking different question"}) + "\n"
+                yield json.dumps({"error": "Sorry, I could not answer that. Please try asking a different question"}) + "\n"
                 return
         except requests.exceptions.RequestException as e:
             logger.error("An error occurred:", e)
-            yield json.dumps({"error": "Sorry, I could not answer that. Please try asking different question"}) + "\n"
+            yield json.dumps({"error": "Sorry, I could not answer that. Please try asking a different question"}) + "\n"
             return
 
 
