@@ -124,7 +124,6 @@ const Layout = () => {
                         <span>&copy; 2023 City of New York. All Rights Reserved.</span>
                     </div>
                     <div className={styles.links}>
-                        <span>Give Feedback</span>
                         <span>Terms of Use</span>
                         <span>Privacy Policy</span>
                     </div>
