@@ -387,6 +387,9 @@ a {
   color: var(--theme-color-neutral-15);
   background: var(--theme-color-neutral-35);
   padding-bottom: 10px;
+  width: 70%;
+  margin-top: 20px;
+  
 }
 .copyright {
   flex: 1;
