@@ -207,14 +207,15 @@
   padding: 20px;
   /* background: #EDF5FD; */
   border-radius: 8px;
-  box-shadow: rgba(182, 52, 67, 1) 1px 1px 2px, rgba(182, 52, 67, 1) 0px 0px 1px;
+  box-shadow: #0042A7 1px 1px 2px, #0042A7 0px 0px 1px;
 
   color: #242424;
   flex: none;
   order: 0;
   flex-grow: 0;
 
-  width: 100%;
+  max-width: 1224px;
+  width: 70%;
   /* filter: drop-shadow(rgba(182, 52, 67, 1) 1px 1px 2px) drop-shadow(rgba(182, 52, 67, 1) 0px 0px 1px); */
 }
 

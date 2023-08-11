@@ -104,9 +104,6 @@ const Layout = () => {
                     </div>
                 </Stack>
             </Dialog>
-            <footer>
-                
-            </footer>
         </div>
     );
 };

@@ -94,7 +94,7 @@ AZURE_OPENAI_MODEL_NC = os.environ.get("AZURE_OPENAI_MODEL_NC")
 AZURE_OPENAI_MODEL_NAME_NC = os.environ.get("AZURE_OPENAI_MODEL_NAME_NC")
 
 AZURE_OPENAI_KEY_US2 = os.environ.get("AZURE_OPENAI_KEY_US2")
-AZURE_OPENAI_RESOURCE_US2 = os.environ.get("AZURE_OPENAI_RESOURCE_US2")
+AZURE_OPENAI_RESOURCE_US2 = os.environ.get("AZURE_OPENAI_RESOURCE_NC")
 AZURE_OPENAI_MODEL_US2 = os.environ.get("AZURE_OPENAI_MODEL_US2")
 AZURE_OPENAI_MODEL_NAME_US2 = os.environ.get("AZURE_OPENAI_MODEL_NAME_US2")
 
@@ -203,69 +203,200 @@ def stream_with_data(body, headers, endpoint):
         }]
     }
 
-    logger.info("stream_with_data: starting POST")
+    logger.info("stream_with_data: starting POST with retries")
     start_time = time.time()
     try:
-        r = s.post(endpoint, json=body, headers=headers, stream=True, timeout=10)
-    except Exception:
-        logger.error(f"Endpoint {endpoint} timed out")
-        return None
-    logger.info(f"stream_with_data: status code of call: {r.status_code}")
-    if r.status_code != 200:
-        return None
-
-    with r:
-        total_time = round(time.time() - start_time, 3)
-        logger.info(f"stream_with_data: POST completed in {total_time} seconds, processing response lines")
-        start_time = time.time()
-        for line in r.iter_lines(chunk_size=10):
-            if line:
-                line_json = json.loads(line.lstrip(b'data:').decode('utf-8'))
-                if 'error' in line_json:
-                    yield json.dumps(line_json).replace("\n", "\\n") + "\n"
-                response["id"] = line_json["id"]
-                response["model"] = line_json["model"]
-                response["created"] = line_json["created"]
-                response["object"] = line_json["object"]
-
-                role = line_json["choices"][0]["messages"][0]["delta"].get("role")
-                if role == "tool":
-                    response["choices"][0]["messages"].append(line_json["choices"][0]["messages"][0]["delta"])
-                elif role == "assistant":
-                    response["choices"][0]["messages"].append({
-                        "role": "assistant",
-                        "content": ""
-                    })
+        for retry in range(max_retries):
+            try:
+                r = s.post(endpoint, json=body, headers=headers, stream=True, timeout=10)
+                r.raise_for_status()
+                break
+            except requests.exceptions.Timeout:
+                logger.error(f"POST timed out on attempt {retry}")
+                if retry < max_retries - 1:
+                    logger.error("Retrying...")
                 else:
-                    deltaText = line_json["choices"][0]["messages"][0]["delta"]["content"]
-                    if deltaText != "[DONE]":
-                        response["choices"][0]["messages"][1]["content"] += deltaText
+                    logger.error("Giving up and returning an error")
+                    yield json.dumps({"error": "Sorry, I could not answer that. Please try asking a different question"}) + "\n"
+                    return
+            except requests.exceptions.RequestException as e:
+                logger.error("An error occurred:", e)
+                yield json.dumps({"error": "Sorry, I could not answer that. Please try asking a different question"}) + "\n"
+                return
 
-                yield json.dumps(response).replace("\n", "\\n") + "\n"
-        total_time = round(time.time() - start_time, 3)
-        logger.info(f"stream_with_data: lines processed in {total_time} seconds")
+        with r:
+            total_time = round(time.time() - start_time, 3)
+            logger.info(f"stream_with_data: POST completed in {total_time} seconds, processing response lines")
+            start_time = time.time()
+            for line in r.iter_lines(chunk_size=10):
+                if line:
+                    line_json = json.loads(line.lstrip(b'data:').decode('utf-8'))
+                    if 'error' in line_json:
+                        yield json.dumps(line_json).replace("\n", "\\n") + "\n"
+                    response["id"] = line_json["id"]
+                    response["model"] = line_json["model"]
+                    response["created"] = line_json["created"]
+                    response["object"] = line_json["object"]
+
+                    role = line_json["choices"][0]["messages"][0]["delta"].get("role")
+                    if role == "tool":
+                        response["choices"][0]["messages"].append(line_json["choices"][0]["messages"][0]["delta"])
+                    elif role == "assistant":
+                        response["choices"][0]["messages"].append({
+                            "role": "assistant",
+                            "content": ""
+                        })
+                    else:
+                        deltaText = line_json["choices"][0]["messages"][0]["delta"]["content"]
+                        if deltaText != "[DONE]":
+                            response["choices"][0]["messages"][1]["content"] += deltaText
+
+                    yield json.dumps(response).replace("\n", "\\n") + "\n"
+            total_time = round(time.time() - start_time, 3)
+            logger.info(f"stream_with_data: lines processed in {total_time} seconds")
+    except Exception as e:
+        logger.error(f"stream_with_data: exception processing response: {str(e)}")
+        yield json.dumps({"error": "Sorry, I could not answer that. Please try asking a different question"}) + "\n"
+
+
+def conversation_with_data(request):
+    current_index = random.randint(0, max_retries - 1)
+    for retry in range(max_retries):
+        try:
+            body, headers = prepare_body_headers_with_data(request, current_index)
+            openai_resource = openai_resources[current_index]
+            openai_model = openai_models[current_index]
+            endpoint = f"https://{openai_resource}.openai.azure.com/openai/deployments/{openai_model}/extensions/chat/completions?api-version={AZURE_OPENAI_PREVIEW_API_VERSION}"
+
+            if not SHOULD_STREAM:
+                r = requests.post(endpoint, headers=headers, json=body)
+                status_code = r.status_code
+                r = r.json()
+
+                return Response(json.dumps(r).replace("\n", "\\n"), status=status_code)
+            else:
+                if request.method == "POST":
+                    return Response(stream_with_data(body, headers, endpoint), mimetype='text/event-stream')
+                else:
+                    return Response(None, mimetype='text/event-stream')
+        except requests.exceptions.Timeout:
+            logger.error(f"POST timed out on attempt {retry}")
+            if retry < max_retries - 1:
+                logger.error("Retrying...")
+            else:
+                logger.error("Giving up and returning an error")
+                yield json.dumps({"error": "Sorry, I could not answer that. Please try asking a different question"}) + "\n"
+                return
+        except requests.exceptions.RequestException as e:
+            logger.error("An error occurred:", e)
+            yield json.dumps({"error": "Sorry, I could not answer that. Please try asking a different question"}) + "\n"
+            return
+
+
+
+def blah(request):
+    body, headers = prepare_body_headers_with_data(request, 0)
+    endpoint = f"https://{AZURE_OPENAI_RESOURCE}.openai.azure.com/openai/deployments/{AZURE_OPENAI_MODEL}/extensions/chat/completions?api-version={AZURE_OPENAI_PREVIEW_API_VERSION}"
+
+    if not SHOULD_STREAM:
+        r = requests.post(endpoint, headers=headers, json=body)
+        status_code = r.status_code
+        r = r.json()
+
+        return Response(json.dumps(r).replace("\n", "\\n"), status=status_code)
+    else:
+        if request.method == "POST":
+            return Response(stream_with_data(body, headers, endpoint), mimetype='text/event-stream')
+        else:
+            return Response(None, mimetype='text/event-stream')
+
+
+def stream_without_data(response):
+    responseText = ""
+    for line in response:
+        deltaText = line["choices"][0]["delta"].get('content')
+        if deltaText and deltaText != "[DONE]":
+            responseText += deltaText
+
+        response_obj = {
+            "id": line["id"],
+            "model": line["model"],
+            "created": line["created"],
+            "object": line["object"],
+            "choices": [{
+                "messages": [{
+                    "role": "assistant",
+                    "content": responseText
+                }]
+            }]
+        }
+        yield json.dumps(response_obj).replace("\n", "\\n") + "\n"
+
+
+def conversation_without_data(request):
+    openai.api_type = "azure"
+    openai.api_base = f"https://{AZURE_OPENAI_RESOURCE}.openai.azure.com/"
+    openai.api_version = "2023-03-15-preview"
+    openai.api_key = AZURE_OPENAI_KEY
+
+    request_messages = request.json["messages"]
+    messages = [
+        {
+            "role": "system",
+            "content": AZURE_OPENAI_SYSTEM_MESSAGE
+        }
+    ]
+
+    for message in request_messages:
+        messages.append({
+            "role": message["role"],
+            "content": message["content"]
+        })
+
+    response = openai.ChatCompletion.create(
+        engine=AZURE_OPENAI_MODEL,
+        messages=messages,
+        temperature=float(AZURE_OPENAI_TEMPERATURE),
+        max_tokens=int(AZURE_OPENAI_MAX_TOKENS),
+        top_p=float(AZURE_OPENAI_TOP_P),
+        stop=AZURE_OPENAI_STOP_SEQUENCE.split("|") if AZURE_OPENAI_STOP_SEQUENCE else None,
+        stream=SHOULD_STREAM
+    )
+
+    if not SHOULD_STREAM:
+        response_obj = {
+            "id": response,
+            "model": response.model,
+            "created": response.created,
+            "object": response.object,
+            "choices": [{
+                "messages": [{
+                    "role": "assistant",
+                    "content": response.choices[0].message.content
+                }]
+            }]
+        }
+
+        return jsonify(response_obj), 200
+    else:
+        if request.method == "POST":
+            return Response(stream_without_data(response), mimetype='text/event-stream')
+        else:
+            return Response(None, mimetype='text/event-stream')
 
 
 @app.route("/conversation", methods=["GET", "POST"])
 def conversation():
-    current_index = random.randint(0, max_retries - 1)
-    for retry in range(max_retries):
-        logger.info(f"####### Retry #{retry} Using index #{current_index}")
-        body, headers = prepare_body_headers_with_data(request, current_index)
-        openai_resource = openai_resources[current_index]
-        openai_model = openai_models[current_index]
-        endpoint = f"https://{openai_resource}.openai.azure.com/openai/deployments/{openai_model}/extensions/chat/completions?api-version={AZURE_OPENAI_PREVIEW_API_VERSION}"
-        data_stream = stream_with_data(body, headers, endpoint)
-        if data_stream is not None and next(data_stream, None) is not None:
-            logger.info("Data stream received, sending response to client")
-            return Response(data_stream, mimetype='text/event-stream')
+    try:
+        use_data = should_use_data()
+        logger.info(f"conversation: start of conversation, use data = {use_data}")
+        if use_data:
+            return conversation_with_data(request)
         else:
-            if retry < max_retries - 1:
-                logger.error("Retrying...")
-                current_index = next_index(current_index)
-            else:
-                logger.error("Giving up and returning an error")
-                return Response(json.dumps({"error": "Sorry, I could not answer that. Please try asking a different question."}) + "\n")
+            return conversation_without_data(request)
+    except Exception as e:
+        logging.exception("Exception in /conversation")
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":
