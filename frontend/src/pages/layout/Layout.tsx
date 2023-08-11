@@ -13,7 +13,7 @@ const Layout = () => {
     const [isSharePanelOpen, setIsSharePanelOpen] = useState<boolean>(false);
     const [copyClicked, setCopyClicked] = useState<boolean>(false);
     const [copyText, setCopyText] = useState<string>("Copy URL");
-    const businessPage = "https://nyc-business.nyc.gov/nycbusiness/";
+    const businessPage = "https://business-stg.csc.nycnet/nycbusiness/";
 
     const handleShareClick = () => {
         setIsSharePanelOpen(true);
@@ -55,20 +55,6 @@ const Layout = () => {
                         <div className={styles.navTitle}
                         onClick={navToBusinessPage}
                         >Business</div>
-                        <div className={styles.navButtons}>
-                            <span>Resources by Business</span>
-                            <span>Business Services</span>
-                            <span>Emergency Preparedness</span>
-                            <span>Regulations</span>
-                            <span>Tools</span>
-                            <span>My Business Dashboard</span>
-                            <span>
-                                <img
-                                    src={SearchProfile}
-                                    aria-hidden="true"
-                                />
-                            </span>
-                        </div>
                     </div>
                     <div className={styles.languageBar}>
                         <img
@@ -118,17 +104,6 @@ const Layout = () => {
                     </div>
                 </Stack>
             </Dialog>
-            <footer>
-                <div className={styles.footerContainer}>
-                    <div className={styles.copyright}>
-                        <span>&copy; 2023 City of New York. All Rights Reserved.</span>
-                    </div>
-                    <div className={styles.links}>
-                        <span>Terms of Use</span>
-                        <span>Privacy Policy</span>
-                    </div>
-                </div>
-            </footer>
         </div>
     );
 };

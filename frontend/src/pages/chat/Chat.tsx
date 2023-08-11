@@ -247,7 +247,7 @@ const Chat = () => {
         </Stack>
       ) : (
         <Stack horizontal className={styles.chatRoot}>
-          <div className={styles.chatContainer}>
+          <div className={styles.chatContainer} style={{maxHeight: lastQuestionRef.current ? 'calc(100vh - 200px)' : 'auto'}}>
             {!lastQuestionRef.current ? (
               <Stack className={styles.chatEmptyState}>
                 <img
@@ -398,6 +398,15 @@ const Chat = () => {
                 NYC Government Preview. Knowledge is based on information
                 published online until July 17 2023.
               </div>
+                <div className={styles.footerContainer}>
+                      <div className={styles.copyright}>
+                          <span>&copy; 2023 City of New York. All Rights Reserved.</span>
+                      </div>
+                      <div className={styles.links}>
+                          <span>Terms of Use</span>
+                          <span>Privacy Policy</span>
+                      </div>
+                  </div>
             </Stack>
           </div>
           {answers.length > 0 && isCitationPanelOpen && activeCitation && (

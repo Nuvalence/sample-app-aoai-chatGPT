@@ -8,6 +8,7 @@
 
 .header {
     background-color: #f2f2f2;
+    position: sticky;
 }
 
 .logoBar {
@@ -153,26 +154,4 @@
     display: flex;
     align-items: center;
     color: #242424;
-}
-
-.footerContainer {
-    display: flex;
-    align-items: center;
-    font-family: Montserrat;
-    font-size: var(--theme-typography-font-size-x-small);
-    color: var(--theme-color-neutral-15);
-    background: var(--theme-color-neutral-35);
-    padding-bottom: 10px;
-}
-.copyright {
-    flex: 1;
-}
-.copyright span {
-    padding-left: 30px;
-}
-.links {
-    text-align: end;
-}
-.links span {
-    padding-right: 30px;
 }
