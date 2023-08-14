@@ -46,6 +46,25 @@
   font-family: Montserrat;
 }
 
+.questionInputSendButton > img {
+  display: none;
+}
+
+@media only screen and (max-width: 600px) {
+  .questionInputSendButton {
+    width: 46px;
+    height: 46px;
+  }
+  .questionInputSendButton > span{
+    display: none;
+  }
+
+  .questionInputSendButton > img {
+    display: inline;
+  }
+  
+}
+
 .questionInputSendButtonDisabled {
   width: 24px;
   height: 23px;
