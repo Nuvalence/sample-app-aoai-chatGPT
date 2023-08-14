@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Stack, TextField } from "@fluentui/react";
 import styles from "./QuestionInput.module.css";
-
+import Send from "../../assets/Send.svg";
 interface Props {
   onSend: (question: string) => void;
   disabled: boolean;
@@ -67,7 +67,12 @@ export const QuestionInput = ({
         }
       >
         {sendQuestionDisabled ? (
-          <button className={styles.questionInputSendButton}>Submit</button>
+          <>
+            <button className={styles.questionInputSendButton}>
+              <span>Submit</span>
+              <img src={Send}/>
+            </button>
+          </>
         ) : (
           <button className={styles.questionInputSendButton}>Submit</button>
         )}
