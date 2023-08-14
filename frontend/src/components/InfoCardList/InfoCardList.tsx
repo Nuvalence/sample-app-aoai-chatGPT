@@ -63,7 +63,7 @@ const cardList: IInfoCard[] = [
                 info: 'May occasionally produce harmful instructions or biased content.',
             },
             { 
-                info: 'Limited knowledge of world and events after 2021.',
+                info: 'Limited knowledge of the world beyond NYC Business topics.',
             }
         ]
 
