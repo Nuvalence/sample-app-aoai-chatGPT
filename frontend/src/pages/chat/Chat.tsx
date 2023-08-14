@@ -247,7 +247,7 @@ const Chat = () => {
         </Stack>
       ) : (
         <Stack horizontal className={styles.chatRoot}>
-          <div className={styles.chatContainer} style={{maxHeight: lastQuestionRef.current ? 'calc(100vh - 200px)' : 'auto'}}>
+          <div className={styles.chatContainer} style={{maxHeight: lastQuestionRef.current ? 'calc(100vh - 200px)' : '100%'}}>
             {!lastQuestionRef.current ? (
               <Stack className={styles.chatEmptyState}>
                 <img
