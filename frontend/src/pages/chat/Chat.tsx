@@ -257,7 +257,7 @@ const Chat = () => {
                 />
                 <h2 className={styles.chatEmptyStateSubtitle}>
                   Welcome to the MyCity Artificial Intelligence Chatbot limited preview. We are testing how to
-                  provide general information on various Business services topics, offer suggestions, and engage
+                  provide general information on various business services topics, offer suggestions, and engage
                   in discussions.
                 </h2>
                 <InfoCardList onQuestionReceived={makeApiRequest} />
@@ -395,8 +395,8 @@ const Chat = () => {
                 onSend={(question) => makeApiRequest(question)}
               />
               <div className={styles.chatDisclaimer}>
-                NYC Government Preview. Limited knowledge of the world
-                beyond NYC Business topics.
+                NYC Government Preview. Knowledge is based on information
+                published online until July 17 2023.
               </div>
                 <div className={styles.footerContainer}>
                       <div className={styles.copyright}>
