@@ -389,8 +389,8 @@ a {
   padding-bottom: 10px;
   width: 70%;
   margin-top: 20px;
-  
 }
+
 .copyright {
   flex: 1;
 }
@@ -398,9 +398,32 @@ a {
   padding-left: 30px;
 }
 .links {
+  display: flex;
   text-align: end;
 }
-.links span {
+.links div {
   padding-right: 30px;
 }
 
+@media only screen and (max-width: 600px) {
+  .footerContainer {
+    display: flex;
+    flex-direction: column-reverse;
+    width: 100%;
+  }
+  
+  .copyright {
+    flex: 1;
+  }
+  .copyright span {
+    padding-left: 0;
+  }
+  .links {
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+  }
+  .links div {
+    padding-right: 0;
+  }
+}
