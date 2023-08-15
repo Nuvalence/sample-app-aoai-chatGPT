@@ -222,11 +222,11 @@ def stream_with_data(request):
                     logger.error(f"stream_with_data: retrying, new index = {current_index}")
                 else:
                     logger.error("stream_with_data: giving up and returning an error")
-                    yield json.dumps({"error": "Something went wrong, please try again."}) + "\n"
+                    yield json.dumps({"error": "Sorry, I could not answer that. Please try asking a different question"}) + "\n"
                     return
             except requests.exceptions.RequestException as e:
                 logger.error("stream_with_data: an error occurred:", e)
-                yield json.dumps({"error": "Something went wrong, please try again."}) + "\n"
+                yield json.dumps({"error": "Sorry, I could not answer that. Please try asking a different question"}) + "\n"
                 return
 
         with r:
@@ -261,7 +261,7 @@ def stream_with_data(request):
             logger.info(f"stream_with_data: lines processed in {total_time} seconds")
     except Exception as e:
         logger.error(f"stream_with_data: exception processing response: {str(e)}")
-        yield json.dumps({"error": "Something went wrong, please try again."}) + "\n"
+        yield json.dumps({"error": "Sorry, I could not answer that. Please try asking a different question"}) + "\n"
 
 
 def conversation_with_data(request):

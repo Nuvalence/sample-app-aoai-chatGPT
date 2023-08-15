@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useBoolean } from "@fluentui/react-hooks"
 import { FontIcon, Stack, Text } from "@fluentui/react";
 
@@ -22,7 +22,6 @@ export const Answer = ({
 }: Props) => {
     const [isRefAccordionOpen, { toggle: toggleIsRefAccordionOpen }] = useBoolean(true);
     const filePathTruncationLimit = 50;
-
     const parsedAnswer = useMemo(() => parseAnswer(answer), [answer]);
     const [chevronIsExpanded, setChevronIsExpanded] = useState(isRefAccordionOpen);
 
@@ -76,7 +75,7 @@ export const Answer = ({
                                     tabIndex={0}
                                     role="button"
                                 >
-                                <span>{parsedAnswer.citations.length > 1 ? parsedAnswer.citations.length + "Supporting references" : "Supporting reference"}</span>
+                                <span>{parsedAnswer.citations.length > 1 ? parsedAnswer.citations.length + " Supporting references" : "Supporting reference"}</span>
                                 </Text>
                                 <FontIcon className={styles.accordionIcon}
                                 onClick={handleChevronClick} iconName={chevronIsExpanded ? 'ChevronDown' : 'ChevronRight'}
@@ -88,10 +87,10 @@ export const Answer = ({
                 )}
                 </Stack>
                 {chevronIsExpanded && 
-                    <div style={{ marginTop: 8, display: "flex", flexFlow: "wrap column", maxHeight: "150px", gap: "4px" }}>
+                    <div style={{ marginTop: 8, display: "flex", flexFlow: "wrap", maxHeight: "150px", gap: "4px" }}>
                         {parsedAnswer.citations.map((citation, idx) => {
                             return (
-                                <span 
+                                <div 
                                     title={createCitationFilepath(citation, ++idx)} 
                                     tabIndex={0} 
                                     role="link" 
@@ -101,7 +100,7 @@ export const Answer = ({
                                     aria-label={createCitationFilepath(citation, idx)}
                                 >
                                     {createCitationFilepath(citation, idx, true)}
-                                </span>);
+                                </div>);
                         })}
                     </div>
                 }

@@ -158,9 +158,22 @@ const Chat = () => {
   }, []);
 
   useEffect(
-    () => chatMessageStreamEnd.current?.scrollIntoView({ behavior: "smooth" }),
-    [showLoadingMessage]
-  );
+    () => {
+      chatMessageStreamEnd.current?.scrollIntoView({ behavior: "smooth" });
+
+      const observer = new MutationObserver(() => {
+        chatMessageStreamEnd.current?.scrollIntoView({ behavior: "smooth" });
+      });
+
+      if (chatMessageStreamEnd && chatMessageStreamEnd.current) {
+        observer.observe(chatMessageStreamEnd.current, {childList: true, subtree: true});
+      }
+
+      return () => {
+        observer.disconnect();
+      };
+      [showLoadingMessage]
+  }, );
 
   const onShowCitation = (citation: Citation) => {
     setActiveCitation([
@@ -234,7 +247,7 @@ const Chat = () => {
         </Stack>
       ) : (
         <Stack horizontal className={styles.chatRoot}>
-          <div className={styles.chatContainer}>
+          <div className={styles.chatContainer} style={{maxHeight: lastQuestionRef.current ? 'calc(100vh - 200px)' : '100%'}}>
             {!lastQuestionRef.current ? (
               <Stack className={styles.chatEmptyState}>
                 <img
@@ -243,9 +256,9 @@ const Chat = () => {
                   aria-hidden="true"
                 />
                 <h2 className={styles.chatEmptyStateSubtitle}>
-                  Welcome to MyCity AI Chatbot, it can provide general
-                  information on a wide range of topics, offer suggestions, and
-                  engage in discussions.
+                  Welcome to the MyCity Artificial Intelligence Chatbot limited preview. We are testing how to
+                  provide general information on various business services topics, offer suggestions, and engage
+                  in discussions.
                 </h2>
                 <InfoCardList onQuestionReceived={makeApiRequest} />
               </Stack>
@@ -271,12 +284,15 @@ const Chat = () => {
                         </div>
                       </div>
                     ) : answer.role === "assistant" ? (
-                      <div className={styles.chatMessageWrapper}>
-                        <img
-                          src={AiAvatar}
-                          className={styles.chatUserAvatarIcon}
-                          aria-hidden="true"
-                        />
+                      <div
+                        className={styles.chatMessageWrapper}>
+                        <div className={styles.answerIconContainer}>
+                          <img
+                            src={AiAvatar}
+                            className={styles.chatUserAvatarIcon}
+                            aria-hidden="true"
+                          />
+                        </div>
                         <Answer
                           answer={{
                             answer: answer.content,
@@ -286,19 +302,10 @@ const Chat = () => {
                           }}
                           onCitationClicked={(c) => onShowCitation(c)}
                         />
+                        <div />
                       </div>
                     ) : answer.role === "error" ? (
                       <div className={styles.chatMessageError}>
-                        <Stack
-                          horizontal
-                          className={styles.chatMessageErrorContent}
-                        >
-                          <ErrorCircleRegular
-                            className={styles.errorIcon}
-                            style={{ color: "rgba(182, 52, 67, 1)" }}
-                          />
-                          <span>Error</span>
-                        </Stack>
                         <span className={styles.chatMessageErrorContent}>
                           {answer.content}
                         </span>
@@ -308,7 +315,7 @@ const Chat = () => {
                 ))}
                 {showLoadingMessage && (
                   <div
-                    className={styles.chatMessageStream}
+                    className={styles.chatMessageStreamLoading}
                     style={{ marginBottom: isLoading ? "40px" : "0px" }}
                     role="log"
                   >
@@ -325,11 +332,13 @@ const Chat = () => {
                       </div>
                     </div>
                     <div className={styles.chatMessageWrapper}>
-                      <img
-                        src={AiAvatar}
-                        className={styles.chatUserAvatarIcon}
-                        aria-hidden="true"
-                      />
+                      <div className={styles.answerIconContainer}>
+                          <img
+                            src={AiAvatar}
+                            className={styles.chatUserAvatarIcon}
+                            aria-hidden="true"
+                          />
+                        </div>
                       <Answer
                         answer={{
                           answer: "Generating answer...",
@@ -389,6 +398,15 @@ const Chat = () => {
                 NYC Government Preview. Knowledge is based on information
                 published online until July 17 2023.
               </div>
+                <div className={styles.footerContainer}>
+                      <div className={styles.copyright}>
+                          <span>&copy; 2023 City of New York. All Rights Reserved.</span>
+                      </div>
+                      <div className={styles.links}>
+                          <div>Terms of Use</div>
+                          <div>Privacy Policy</div>
+                      </div>
+                  </div>
             </Stack>
           </div>
           {answers.length > 0 && isCitationPanelOpen && activeCitation && (
