@@ -45,6 +45,7 @@
   flex-shrink: 0;
   color: var(--white);
   border-radius: 5px;
+  border: none;
   background: #C46;
   font-family: Montserrat;
 }

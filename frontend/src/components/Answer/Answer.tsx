@@ -11,6 +11,8 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import supersub from 'remark-supersub'
 
+import ExternalLinkRef from "../../assets/ExternalLinkRef.svg";
+
 interface Props {
     answer: AskResponse;
     onCitationClicked: (citedDocument: Citation) => void;
@@ -100,6 +102,11 @@ export const Answer = ({
                                     aria-label={createCitationFilepath(citation, idx)}
                                 >
                                     {createCitationFilepath(citation, idx, true)}
+                                    <img
+                                        src={ExternalLinkRef}
+                                        className={styles.externalLinkIcon}
+                                        aria-hidden="true"
+                                    />
                                 </div>);
                         })}
                     </div>
