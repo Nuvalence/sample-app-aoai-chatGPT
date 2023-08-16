@@ -69,6 +69,12 @@
   }
 }
 
+@media only screen and (min-width: 1440px) {
+  .chatEmptyStateSubtitle {
+    width: 50%;
+  }
+}
+
 .chatContainer {
   display: flex;
   flex-direction: column;

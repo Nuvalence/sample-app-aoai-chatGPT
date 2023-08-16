@@ -199,6 +199,19 @@ const Chat = () => {
     return [];
   };
 
+  const termsOfUsePage = "https://www.nyc.gov/home/terms-of-use.page";
+  const privacyPolicyPage = "https://www.nyc.gov/home/privacy-policy.page";
+
+  
+  const navToTermsPage = () => {
+    window.open(termsOfUsePage ?? "", "_blank")?.focus();
+  }
+
+  const navToPolicyPage = () => {
+    window.open(privacyPolicyPage ?? "", "_blank")?.focus();
+  }
+  
+
   return (
     <div className={styles.container} role="main">
       {showAuthMessage ? (
@@ -403,8 +416,8 @@ const Chat = () => {
                           <span>&copy; 2023 City of New York. All Rights Reserved.</span>
                       </div>
                       <div className={styles.links}>
-                          <div>Terms of Use</div>
-                          <div>Privacy Policy</div>
+                          <div onClick={navToTermsPage}>Terms of Use</div>
+                          <div onClick={navToPolicyPage}>Privacy Policy</div>
                       </div>
                   </div>
             </Stack>
