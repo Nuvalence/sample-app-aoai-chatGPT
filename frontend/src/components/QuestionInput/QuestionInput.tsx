@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Stack, TextField } from "@fluentui/react";
 import styles from "./QuestionInput.module.css";
 import Send from "../../assets/Send.svg";
+import SendDisabled from "../../assets/SendDisabled.svg";
+
 interface Props {
   onSend: (question: string) => void;
   disabled: boolean;
@@ -55,6 +57,8 @@ export const QuestionInput = ({
         value={question}
         onChange={onQuestionChange}
         onKeyDown={onEnterPress}
+        style={{color: '#0D0C0C !important'}}
+        
       />
       <div
         className={styles.questionInputSendButtonContainer}
@@ -66,16 +70,26 @@ export const QuestionInput = ({
           e.key === "Enter" || e.key === " " ? sendQuestion() : null
         }
       >
+
         {sendQuestionDisabled ? (
           <>
-            <button className={styles.questionInputSendButton}>
-              <span>Submit</span>
-              <img src={Send}/>
+            <button 
+            className={styles.questionInputSendButton}
+            disabled={true}
+            style={{background: 'none', border: 'none'}}
+            >
+              <img src={SendDisabled}/>
             </button>
           </>
-        ) : (
-          <button className={styles.questionInputSendButton}>Submit</button>
+        ): (
+          <button 
+            className={styles.questionInputSendButton}
+            disabled={false}
+            >
+              <img src={Send}/>
+            </button>
         )}
+    
       </div>
     </Stack>
   );

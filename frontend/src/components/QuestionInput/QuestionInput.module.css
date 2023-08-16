@@ -1,3 +1,5 @@
+@import '../../styles/variables/_variables.css';
+
 .questionInputContainer {
   height: 56px;
   border-radius: 8px;
@@ -8,6 +10,7 @@
   align-items: center;
   width: 70%;
   font-family: Lora;
+  box-shadow: var(--black-shadow-10);
 }
 
 @media only screen and (max-width: 600px) {
@@ -35,7 +38,7 @@
 
 .questionInputSendButton {
   display: flex;
-  width: 120px;
+  width: 46px;
   height: 46px;
   justify-content: center;
   align-items: center;
@@ -47,29 +50,25 @@
 }
 
 .questionInputSendButton > img {
-  display: none;
-}
-
-@media only screen and (max-width: 600px) {
-  .questionInputSendButton {
-    width: 46px;
-    height: 46px;
-  }
-  .questionInputSendButton > span{
-    display: none;
-  }
-
-  .questionInputSendButton > img {
-    display: inline;
-  }
-  
+  display: inline;
 }
 
 .questionInputSendButtonDisabled {
-  width: 24px;
-  height: 23px;
+  display: flex;
+  width: 46px;
+  height: 46px;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  color: var(--white);
+  border-radius: 5px;
   background: none;
-  color: #424242;
+  border: none;
+  font-family: Montserrat;
+}
+
+.questionInputSendButtonDisabled > img {
+  display: inline;
 }
 
 .questionInputOptionsButton {
