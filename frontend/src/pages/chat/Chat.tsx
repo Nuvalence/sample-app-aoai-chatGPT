@@ -416,8 +416,8 @@ const Chat = () => {
                           <span>&copy; 2023 City of New York. All Rights Reserved.</span>
                       </div>
                       <div className={styles.links}>
-                          <div onClick={navToTermsPage}>Terms of Use</div>
-                          <div onClick={navToPolicyPage}>Privacy Policy</div>
+                          <a href="https://www.nyc.gov/home/terms-of-use.page">Terms of Use</a>
+                          <a href="https://www.nyc.gov/home/privacy-policy.page">Privacy Policy</a>
                       </div>
                   </div>
             </Stack>

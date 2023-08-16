@@ -410,6 +410,14 @@ a {
 .links div {
   padding-right: 30px;
 }
+.links a {
+  color: inherit;
+}
+
+.links a:hover {
+  color: inherit;
+  text-decoration: underline solid currentColor;
+}
 
 @media only screen and (max-width: 600px) {
   .footerContainer {
