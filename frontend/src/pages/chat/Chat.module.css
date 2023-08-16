@@ -69,6 +69,12 @@
   }
 }
 
+@media only screen and (min-width: 1440px) {
+  .chatEmptyStateSubtitle {
+    width: 50%;
+  }
+}
+
 .chatContainer {
   display: flex;
   flex-direction: column;
@@ -403,6 +409,14 @@ a {
 }
 .links div {
   padding-right: 30px;
+}
+.links a {
+  color: inherit;
+}
+
+.links a:hover {
+  color: inherit;
+  text-decoration: underline solid currentColor;
 }
 
 @media only screen and (max-width: 600px) {
