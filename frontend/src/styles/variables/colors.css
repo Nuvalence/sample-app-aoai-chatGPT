@@ -17,8 +17,11 @@
     --theme-color-neutral-20: #eaeef1;
     --theme-color-neutral-16: #ADB2B9;
     --theme-color-neutral-15: #727478;
+    --theme-color-neutral-12: #424242;
     --theme-color-neutral-10: #1c1c1c;
     --theme-color-neutral-5: #080707;
 
     --black-shadow: 6px 17px 16px 0px #b7b7b730;
+    --black-shadow-10: 0px 9px 16px 0px #b7b7b726;
+
 }
